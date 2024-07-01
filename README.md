@@ -67,9 +67,11 @@ import {scaffold} from '@form8ion/github';
 #### Execute
 
 ```javascript
-(async () => {
-  await scaffold({projectRoot: process.cwd()});
-})();
+await scaffold({
+  projectRoot: process.cwd(),
+  name: 'foo',
+  owner: 'travi'
+});
 ```
 
 ## Contributing
