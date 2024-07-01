@@ -1,6 +1,7 @@
 # github
 
-form8ion plugin for projects using GitHub as host for their git repository
+form8ion plugin for projects using [GitHub](https://github.com) as host for
+their git repository
 
 <!--status-badges start -->
 
