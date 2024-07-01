@@ -4,6 +4,9 @@
   "license": "MIT",
   "version": "0.0.0-semantically-released",
   "type": "module",
+  "engines": {
+    "node": "^18.17 || >=20.6.1"
+  },
   "author": "Matt Travi <npm@travi.org> (https://matt.travi.org)",
   "repository": "form8ion/github",
   "bugs": "https://github.com/form8ion/github/issues",
@@ -38,7 +41,8 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "run-s 'lint:js -- --fix'",
     "lint:publish": "publint --strict",
-    "test": "npm-run-all --print-label build --parallel lint:* --parallel test:*"
+    "test": "npm-run-all --print-label build --parallel lint:* --parallel test:*",
+    "lint:engines": "ls-engines"
   },
   "files": [
     "example.js",
@@ -64,6 +68,7 @@
     "husky": "9.0.11",
     "jest-when": "3.6.0",
     "lockfile-lint": "4.14.0",
+    "ls-engines": "0.9.2",
     "mock-fs": "5.2.0",
     "npm-run-all2": "6.2.0",
     "publint": "0.2.8",
