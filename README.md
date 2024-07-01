@@ -13,12 +13,24 @@ their git repository
 
 ## Table of Contents
 
+* [Features](#features)
+  * [Creation of GitHub repository](#creation-of-github-repository)
 * [Usage](#usage)
   * [Installation](#installation)
+  * [Enabling actions against the GitHub API](#enabling-actions-against-the-github-api)
   * [Example](#example)
+    * [Import](#import)
+    * [Execute](#execute)
 * [Contributing](#contributing)
   * [Dependencies](#dependencies)
   * [Verification](#verification)
+
+## Features
+
+### Creation of GitHub repository
+
+When [authentication is provided](#enabling-actions-against-the-github-api),
+a repository will be created on GitHub, assuming one does not already exist.
 
 ## Usage
 
@@ -36,6 +48,13 @@ their git repository
 ```sh
 $ npm install @form8ion/github --save-prod
 ```
+
+### Enabling actions against the GitHub API
+
+This plugin leverages the [.netrc strategy](https://github.com/travi/octokit-auth-netrc)
+for [octokit](https://github.com/octokit/rest.js/). Be sure to
+[add your personal access token](https://github.com/travi/octokit-auth-netrc#defining-your-token)
+to leverage the GitHub API integration benefits of this plugin.
 
 ### Example
 
