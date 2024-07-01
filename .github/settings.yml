@@ -1,0 +1,6 @@
+_extends: .github
+repository:
+  name: github
+  description: form8ion plugin for projects using GitHub as host for their git repository
+  homepage: https://npm.im/@form8ion/github
+  private: false
