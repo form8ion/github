@@ -33,7 +33,7 @@ their git repository
 ### Installation
 
 ```sh
-$ npm install @form8ion/github
+$ npm install @form8ion/github --save-prod
 ```
 
 ### Example
