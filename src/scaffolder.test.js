@@ -1,4 +1,5 @@
 import {promises as fs} from 'node:fs';
+import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {when} from 'jest-when';
 import any from '@travi/any';
@@ -9,6 +10,7 @@ import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
 
 vi.mock('node:fs');
+vi.mock('@form8ion/repository-settings');
 vi.mock('./octokit/factory.js');
 vi.mock('./repository/index.js');
 
@@ -27,5 +29,6 @@ describe('scaffolder', () => {
 
     expect(await scaffold({name, owner, visibility, projectRoot})).toEqual({...repositoryResult});
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
+    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility});
   });
 });
