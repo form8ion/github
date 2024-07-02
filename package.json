@@ -56,7 +56,6 @@
   "devDependencies": {
     "@cucumber/cucumber": "10.8.0",
     "@form8ion/commitlint-config": "1.0.76",
-    "@form8ion/core": "4.3.0",
     "@form8ion/eslint-config": "7.0.9",
     "@form8ion/eslint-config-cucumber": "1.4.1",
     "@form8ion/remark-lint-preset": "6.0.3",
@@ -85,6 +84,7 @@
     "vitest": "1.6.0"
   },
   "dependencies": {
+    "@form8ion/core": "^4.3.0",
     "@octokit/rest": "^20.0.0",
     "@travi/cli-messages": "^1.1.1",
     "octokit-auth-netrc": "^3.1.1"
