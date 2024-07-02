@@ -8,3 +8,6 @@ overrides:
   - files: ./vitest.config.js
     rules:
       import/no-unresolved: off
+
+parserOptions:
+  ecmaVersion: 2022
