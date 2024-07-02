@@ -1,8 +1,20 @@
 Feature: Scaffolder
 
-  Scenario: new repository
+  Scenario: new public repository
     Given netrc contains a GitHub token
     And no repository exists for the "user" on GitHub
+    And the visibility of the repository should be "Public"
+#    And next steps are provided
+    When the project is scaffolded
+    Then a repository is created on GitHub
+#    And issues are created for next-steps
+#    And repository settings are configured
+    And repository details are returned
+
+  Scenario: new private repository
+    Given netrc contains a GitHub token
+    And no repository exists for the "user" on GitHub
+    And the visibility of the repository should be "Private"
 #    And next steps are provided
     When the project is scaffolded
     Then a repository is created on GitHub
@@ -34,11 +46,23 @@ Feature: Scaffolder
 #    But repository settings are configured
     And no repository details are returned
 
-  Scenario: user is a member of an organization and the project is new
+  Scenario: user is a member of an organization and the public project is new
     Given netrc contains a GitHub token
     And the user is a member of an organization
     And no repository exists for the "organization" on GitHub
+    And the visibility of the repository should be "Public"
     When the project is scaffolded
+    Then a repository is created on GitHub
+#    And repository settings are configured
+    And repository details are returned
+
+  Scenario: user is a member of an organization and the private project is new
+    Given netrc contains a GitHub token
+    And the user is a member of an organization
+    And no repository exists for the "organization" on GitHub
+    And the visibility of the repository should be "Private"
+    When the project is scaffolded
+    Then a repository is created on GitHub
 #    And repository settings are configured
     And repository details are returned
 

@@ -15,9 +15,12 @@ describe('scaffolder', () => {
     const repositoryResult = any.simpleObject();
     const name = any.word();
     const owner = any.word();
+    const visibility = any.word();
     octokitFactory.mockReturnValue(octokitClient);
-    when(scaffoldRepository).calledWith({octokit: octokitClient, name, owner}).mockResolvedValue(repositoryResult);
+    when(scaffoldRepository)
+      .calledWith({octokit: octokitClient, name, owner, visibility})
+      .mockResolvedValue(repositoryResult);
 
-    expect(await scaffold({name, owner})).toEqual({...repositoryResult});
+    expect(await scaffold({name, owner, visibility})).toEqual({...repositoryResult});
   });
 });

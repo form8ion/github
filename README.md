@@ -62,6 +62,7 @@ to leverage the GitHub API integration benefits of this plugin.
 
 ```javascript
 import {scaffold} from '@form8ion/github';
+import any from '@travi/any';
 ```
 
 #### Execute
@@ -70,7 +71,8 @@ import {scaffold} from '@form8ion/github';
 await scaffold({
   projectRoot: process.cwd(),
   name: 'foo',
-  owner: 'travi'
+  owner: 'travi',
+  visibility: any.fromList(['Public', 'Private'])
 });
 ```
 
