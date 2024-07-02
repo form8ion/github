@@ -15,9 +15,12 @@ their git repository
 
 * [Features](#features)
   * [Creation of GitHub repository](#creation-of-github-repository)
+  * [Configuration of GitHub Repository Settings](#configuration-of-github-repository-settings)
 * [Usage](#usage)
   * [Installation](#installation)
   * [Enabling actions against the GitHub API](#enabling-actions-against-the-github-api)
+  * [Enabling repository configuration with `repository-settings/app`](#enabling-repository-configuration-with-repository-settingsapp)
+    * [Account-level settings](#account-level-settings)
   * [Example](#example)
     * [Import](#import)
     * [Execute](#execute)
@@ -31,6 +34,15 @@ their git repository
 
 When [authentication is provided](#enabling-actions-against-the-github-api),
 a repository will be created on GitHub, assuming one does not already exist.
+
+### Configuration of GitHub Repository Settings
+
+This plugin configures repository settings by generating the settings file for
+use by [repository-settings/app](https://github.com/respository-settings/app).
+The settings in the file will be applied, along with those in the [account-level file](#account-level-settings),
+once the generated file is pushed to GitHub in the default branch, assuming you
+have the [repository-settings app installed](#enabling-repository-configuration-with-repository-settingsapp)
+for your account.
 
 ## Usage
 

@@ -27,7 +27,6 @@ After(function () {
 When('the project is scaffolded', async function () {
   stubbedFs({
     ...this.netrcContent && {[`${process.env.HOME}/.netrc`]: this.netrcContent},
-    // [`${process.env.HOME}/.gitconfig`]: `[github]\n\tuser = ${this.githubUser}`,
     node_modules: stubbedNodeModules
   });
 
