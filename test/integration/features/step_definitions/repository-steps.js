@@ -66,8 +66,10 @@ Given('no repository exists for the {string} on GitHub', async function (account
     );
 
     server.use(
-      http.post(`https://api.github.com/orgs/${organizationAccount}/repos`, ({request}) => {
+      http.post(`https://api.github.com/orgs/${organizationAccount}/repos`, async ({request}) => {
         if (authorizationHeaderIncludesToken(request)) {
+          this.createdRepositoryDetails = await request.clone().json();
+
           return HttpResponse.json({
             ssh_url: sshUrl,
             html_url: htmlUrl
@@ -128,4 +130,5 @@ Then('no repository is created on GitHub', async function () {
 
 Then('a repository is created on GitHub', async function () {
   assert.equal(this.createdRepositoryDetails.name, this.projectName);
+  assert.equal(this.createdRepositoryDetails.private, 'Public' !== this.projectVisibility);
 });

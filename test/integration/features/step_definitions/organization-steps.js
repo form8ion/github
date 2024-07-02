@@ -1,9 +1,10 @@
-import {Given, Then} from '@cucumber/cucumber';
-import {http, HttpResponse} from 'msw';
 import {StatusCodes} from 'http-status-codes';
 
+import {Given, Then} from '@cucumber/cucumber';
+import {http, HttpResponse} from 'msw';
+import assert from 'node:assert';
+
 import {authorizationHeaderIncludesToken} from './repository-steps.js';
-import {assert} from 'chai';
 
 Given('the user is a member of an organization', async function () {
   this.githubUser = this.organizationAccount;
