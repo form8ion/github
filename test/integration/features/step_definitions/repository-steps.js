@@ -20,6 +20,7 @@ export function authorizationHeaderIncludesToken(request) {
 Before(function () {
   this.server = server;
   this.userAccount = userAccount;
+  this.organizationAccount = organizationAccount;
   this.githubToken = githubToken;
 });
 

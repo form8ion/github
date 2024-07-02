@@ -4,7 +4,9 @@ import {fileURLToPath} from 'node:url';
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
+import debugTest from 'debug';
 
+const debug = debugTest('test');
 const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-disable-line no-underscore-dangle
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
@@ -15,6 +17,7 @@ Before(async function () {
   ({scaffold} = await import('@form8ion/github'));
 
   this.projectName = any.word();
+  this.projectRoot = process.cwd();
 });
 
 After(function () {
@@ -28,9 +31,14 @@ When('the project is scaffolded', async function () {
     node_modules: stubbedNodeModules
   });
 
-  this.result = await scaffold({
-    projectRoot: process.cwd(),
-    name: this.projectName,
-    owner: this.githubUser
-  });
+  try {
+    this.result = await scaffold({
+      projectRoot: this.projectRoot,
+      name: this.projectName,
+      owner: this.githubUser
+    });
+  } catch (err) {
+    debug(err);
+    this.scaffoldError = err;
+  }
 });

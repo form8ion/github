@@ -79,66 +79,70 @@ describe('creation', () => {
     });
   });
 
-  // describe('for organization', () => {
-  //   let getAuthenticated, listForAuthenticatedUser;
-  //
-  //   beforeEach(() => {
-  //     getAuthenticated = vi.fn();
-  //     listForAuthenticatedUser = vi.fn();
-  //
-  //     getAuthenticated.mockResolvedValue({data: {login: any.word()}});
-  //     listForAuthenticatedUser.mockResolvedValue({
-  //       data: [
-  //         ...any.listOf(() => ({...any.simpleObject(), login: any.word})),
-  //         {...any.simpleObject(), login: account}
-  //       ]
-  //     });
-  //   });
-  //
-  //   // it('should create the repository for the provided organization account', async () => {
-  //   //   const createInOrg = vi.fn();
-  //   //   const get = vi.fn();
-  //   //   const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-  //   //   when(createInOrg).calledWith({org: account, name, private: false}).mockResolvedValue(repoDetailsResponse);
-  //   //   get.mockImplementation(() => {
-  //   //     throw repoNotFoundError;
-  //   //   });
-  //   //
-  //   //   expect(await scaffoldRepository(name, account, 'Public', client)).toEqual({sshUrl, htmlUrl});
-  //   // });
-  //
-  //   // it('should not create the repository when it already exists', async () => {
-  //   //   const createInOrg = vi.fn();
-  //   //   const get = vi.fn();
-  //   //   const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-  //   //   when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
-  //   //
-  //   //   expect(await scaffoldRepository(name, account, 'Public', client)).toEqual({sshUrl, htmlUrl});
-  //   //   expect(createInOrg).not.toHaveBeenCalled();
-  //   // });
-  //
-  //   // it('should create the repository as private when visibility is `Private`', async () => {
-  //   //   const createInOrg = vi.fn();
-  //   //   const get = vi.fn();
-  //   //   const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-  //   //   when(createInOrg).calledWith({org: account, name, private: true}).mockResolvedValue(repoDetailsResponse);
-  //   //   get.mockImplementation(() => {
-  //   //     throw repoNotFoundError;
-  //   //   });
-  //   //
-  //   //   expect(await scaffoldRepository(name, account, 'Private', client)).toEqual({sshUrl, htmlUrl});
-  //   // });
-  //
-  //   // it('should rethrow other errors', async () => {
-  //   //   const get = vi.fn();
-  //   //   const client = {repos: {get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-  //   //   get.mockImplementation(() => {
-  //   //     throw fetchFailureError;
-  //   //   });
-  //   //
-  //   //   await expect(scaffoldRepository(name, account, 'Private', client)).rejects.toThrowError(fetchFailureError);
-  //   // });
-  // });
+  describe('for organization', () => {
+    let getAuthenticated, listForAuthenticatedUser;
+
+    beforeEach(() => {
+      getAuthenticated = vi.fn();
+      listForAuthenticatedUser = vi.fn();
+
+      getAuthenticated.mockResolvedValue({data: {login: any.word()}});
+      listForAuthenticatedUser.mockResolvedValue({
+        data: [
+          ...any.listOf(() => ({...any.simpleObject(), login: any.word})),
+          {...any.simpleObject(), login: account}
+        ]
+      });
+    });
+
+    it('should create the repository for the provided organization account', async () => {
+      const createInOrg = vi.fn();
+      const get = vi.fn();
+      const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
+      when(createInOrg).calledWith({org: account, name, private: false}).mockResolvedValue(repoDetailsResponse);
+      get.mockImplementation(() => {
+        throw repoNotFoundError;
+      });
+
+      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
+        .toEqual({sshUrl, htmlUrl});
+    });
+
+    it('should not create the repository when it already exists', async () => {
+      const createInOrg = vi.fn();
+      const get = vi.fn();
+      const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
+      when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
+
+      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
+        .toEqual({sshUrl, htmlUrl});
+      expect(createInOrg).not.toHaveBeenCalled();
+    });
+
+    it('should create the repository as private when visibility is `Private`', async () => {
+      const createInOrg = vi.fn();
+      const get = vi.fn();
+      const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
+      when(createInOrg).calledWith({org: account, name, private: true}).mockResolvedValue(repoDetailsResponse);
+      get.mockImplementation(() => {
+        throw repoNotFoundError;
+      });
+
+      expect(await scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client}))
+        .toEqual({sshUrl, htmlUrl});
+    });
+
+    it('should rethrow other errors', async () => {
+      const get = vi.fn();
+      const client = {repos: {get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
+      get.mockImplementation(() => {
+        throw fetchFailureError;
+      });
+
+      await expect(scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client}))
+        .rejects.toThrowError(fetchFailureError);
+    });
+  });
 
   describe('unauthorized account', () => {
     it('should throw an error if the authenticated user does not have access to the requested account', async () => {
