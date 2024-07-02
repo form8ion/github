@@ -9,9 +9,9 @@ Given('no authentication is provided', async function () {
   return undefined;
 });
 
-// Given('netrc contains no GitHub token', async function () {
-//   this.netrcContent = '';
-// });
+Given('netrc contains no GitHub token', async function () {
+  this.netrcContent = '';
+});
 
 Given('netrc contains a GitHub token', async function () {
   this.githubUser = this.userAccount;
