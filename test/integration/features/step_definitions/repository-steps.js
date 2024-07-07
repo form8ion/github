@@ -115,6 +115,14 @@ Given('a repository already exists for the {string} on GitHub', async function (
   }
 });
 
+Given('the project is versioned on GitHub', async function () {
+  this.github = true;
+});
+
+Given('the project is not versioned on GitHub', async function () {
+  this.github = false;
+});
+
 Then('repository details are returned', async function () {
   assert.equal(this.result.sshUrl, sshUrl);
   assert.equal(this.result.htmlUrl, htmlUrl);

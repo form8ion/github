@@ -3,7 +3,7 @@
 import {resolve} from 'path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
-import {scaffold, test} from './lib/index.js';
+import {scaffold, test, lift} from './lib/index.js';
 
 // remark-usage-ignore-next
 stubbedFs({node_modules: stubbedFs.load(resolve('node_modules'))});
@@ -16,7 +16,16 @@ await scaffold({
   projectRoot,
   name: 'foo',
   owner: 'travi',
-  visibility: any.fromList(['Public', 'Private'])
+  visibility: any.fromList(['Public', 'Private']),
+  description: any.sentence()
 });
 
-await test({projectRoot});
+if (await test({projectRoot})) {
+  await lift({
+    projectRoot,
+    results: {
+      projectDetails: {homepage: any.url()},
+      tags: any.listOf(any.word)
+    }
+  });
+}
