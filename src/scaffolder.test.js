@@ -22,13 +22,15 @@ describe('scaffolder', () => {
     const name = any.word();
     const owner = any.word();
     const visibility = any.word();
+    const description = any.sentence();
     octokitFactory.mockReturnValue(octokitClient);
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockResolvedValue(repositoryResult);
 
-    expect(await scaffold({name, owner, visibility, projectRoot})).toEqual({...repositoryResult});
+    expect(await scaffold({name, owner, visibility, projectRoot, description}))
+      .toEqual({...repositoryResult});
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
-    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility});
+    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
   });
 });

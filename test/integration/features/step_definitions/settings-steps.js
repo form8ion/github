@@ -22,10 +22,8 @@ Then('repository settings are configured', async function () {
       _extends: '.github',
       repository: {
         name: this.projectName,
-        // description: this.projectDescription,
-        // homepage: this.projectHomepage,
+        description: this.projectDescription,
         private: 'Public' !== this.projectVisibility
-        // topics: this.topics.join(', ')
       }
     }
   );

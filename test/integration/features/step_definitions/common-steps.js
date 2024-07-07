@@ -18,6 +18,7 @@ Before(async function () {
   ({scaffold, test, lift} = await import('@form8ion/github'));
 
   this.projectName = any.word();
+  this.projectDescription = any.sentence();
   this.projectRoot = process.cwd();
 });
 
@@ -36,7 +37,8 @@ When('the project is scaffolded', async function () {
       projectRoot: this.projectRoot,
       name: this.projectName,
       owner: this.githubUser,
-      visibility: this.projectVisibility
+      visibility: this.projectVisibility,
+      description: this.projectDescription
     });
   } catch (err) {
     debug(err);
