@@ -138,7 +138,10 @@ Then('no repository is created on GitHub', async function () {
 });
 
 Then('a repository is created on GitHub', async function () {
-  assert.equal(await directoryExists(`${this.projectRoot}/.github/`), true, 'the `.github/` directory is missing');
   assert.equal(this.createdRepositoryDetails.name, this.projectName);
   assert.equal(this.createdRepositoryDetails.private, 'Public' !== this.projectVisibility);
+});
+
+Then('the .github directory was created', async function () {
+  assert.equal(await directoryExists(`${this.projectRoot}/.github/`), true, 'the `.github/` directory is missing');
 });

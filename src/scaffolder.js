@@ -1,5 +1,5 @@
 import {promises as fs} from 'node:fs';
-import {info} from '@travi/cli-messages';
+import {info, error} from '@travi/cli-messages';
 import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {factory as getAuthenticatedOctokit} from './octokit/factory.js';
@@ -10,11 +10,16 @@ export default async function ({name, owner, visibility, description, projectRoo
 
   const octokit = getAuthenticatedOctokit();
 
-  const [repositoryResult] = await Promise.all([
-    scaffoldRepository({octokit, name, owner, visibility}),
-    fs.mkdir(`${projectRoot}/.github`, {recursive: true}),
-    scaffoldSettings({projectRoot, projectName: name, visibility, description})
-  ]);
+  await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
 
-  return {...repositoryResult};
+  try {
+    const repositoryResult = await scaffoldRepository({octokit, name, owner, visibility});
+    await scaffoldSettings({projectRoot, projectName: name, visibility, description});
+
+    return repositoryResult;
+  } catch (e) {
+    error(e.message);
+
+    throw e;
+  }
 }

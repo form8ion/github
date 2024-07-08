@@ -7,6 +7,7 @@ Feature: Scaffolder
 #    And next steps are provided
     When the project is scaffolded
     Then a repository is created on GitHub
+    And the .github directory was created
 #    And issues are created for next-steps
     And repository settings are configured
     And repository details are returned
@@ -18,6 +19,7 @@ Feature: Scaffolder
 #    And next steps are provided
     When the project is scaffolded
     Then a repository is created on GitHub
+    And the .github directory was created
 #    And issues are created for next-steps
     And repository settings are configured
     And repository details are returned
@@ -28,6 +30,7 @@ Feature: Scaffolder
     When the project is scaffolded
     Then no repository is created on GitHub
     But repository details are returned
+    And the .github directory was created
     And repository settings are configured
 
   Scenario: no authentication
@@ -37,6 +40,7 @@ Feature: Scaffolder
     Then no repository is created on GitHub
 #    And no issues are created for next-steps
     But repository settings are configured
+    And the .github directory was created
     And no repository details are returned
 
   Scenario: ~/.netrc contains no GitHub token
@@ -44,6 +48,7 @@ Feature: Scaffolder
     When the project is scaffolded
     Then no repository is created on GitHub
     But repository settings are configured
+    And the .github directory was created
     And no repository details are returned
 
   Scenario: user is a member of an organization and the public project is new
@@ -53,6 +58,7 @@ Feature: Scaffolder
     And the visibility of the repository should be "Public"
     When the project is scaffolded
     Then a repository is created on GitHub
+    And the .github directory was created
     And repository settings are configured
     And repository details are returned
 
@@ -63,6 +69,7 @@ Feature: Scaffolder
     And the visibility of the repository should be "Private"
     When the project is scaffolded
     Then a repository is created on GitHub
+    And the .github directory was created
     And repository settings are configured
     And repository details are returned
 
@@ -71,6 +78,8 @@ Feature: Scaffolder
     And the user is a member of an organization
     And a repository already exists for the "organization" on GitHub
     When the project is scaffolded
+    Then no repository is created on GitHub
+    And the .github directory was created
     And repository settings are configured
     And repository details are returned
 
@@ -79,5 +88,6 @@ Feature: Scaffolder
     And the user is not a member of the organization
     When the project is scaffolded
     Then no repository is created on GitHub
-    And repository settings are configured
+    But the .github directory was created
+    And no repository settings are configured
     And and an authorization error is thrown

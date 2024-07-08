@@ -29,6 +29,10 @@ Then('repository settings are configured', async function () {
   );
 });
 
+Then('no repository settings are configured', async function () {
+  assert.equal(await fileExists(`${this.projectRoot}/.github/settings.yml`), false);
+});
+
 Then('properties are updated in the settings file', async function () {
   assert.deepEqual(
     yaml.load(await fs.readFile(`${this.projectRoot}/.github/settings.yml`, 'utf-8')),
