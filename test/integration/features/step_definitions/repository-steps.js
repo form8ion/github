@@ -115,6 +115,14 @@ Given('a repository already exists for the {string} on GitHub', async function (
   }
 });
 
+Given('the project is versioned on GitHub', async function () {
+  this.github = true;
+});
+
+Given('the project is not versioned on GitHub', async function () {
+  this.github = false;
+});
+
 Then('repository details are returned', async function () {
   assert.equal(this.result.sshUrl, sshUrl);
   assert.equal(this.result.htmlUrl, htmlUrl);
@@ -130,7 +138,10 @@ Then('no repository is created on GitHub', async function () {
 });
 
 Then('a repository is created on GitHub', async function () {
-  assert.equal(await directoryExists(`${this.projectRoot}/.github/`), true, 'the `.github/` directory is missing');
   assert.equal(this.createdRepositoryDetails.name, this.projectName);
   assert.equal(this.createdRepositoryDetails.private, 'Public' !== this.projectVisibility);
+});
+
+Then('the .github directory was created', async function () {
+  assert.equal(await directoryExists(`${this.projectRoot}/.github/`), true, 'the `.github/` directory is missing');
 });
