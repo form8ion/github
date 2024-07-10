@@ -2,27 +2,35 @@ import {lift as liftSettings, test as repositoryMaintainedWithRepositorySettings
 
 import any from '@travi/any';
 import {when} from 'jest-when';
-import {describe, expect, it, vi} from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
 
+import nextSteps from './next-steps/next-steps.js';
 import lift from './lifter.js';
 
 vi.mock('@form8ion/repository-settings');
+vi.mock('./next-steps/next-steps.js');
 
 describe('lifter', () => {
   const projectRoot = any.string();
   const results = any.simpleObject();
+  const vcs = any.simpleObject();
+  const nextStepsResult = any.simpleObject();
+
+  beforeEach(() => {
+    when(nextSteps).calledWith({results, vcs}).mockResolvedValue(nextStepsResult);
+  });
 
   it('should apply the settings lifter if the project is managed with the settings app', async () => {
-    const settingsResult = any.simpleObject();
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).mockResolvedValue(true);
-    when(liftSettings).calledWith({projectRoot, results}).mockResolvedValue(settingsResult);
 
-    expect(await lift({projectRoot, results})).toEqual(settingsResult);
+    expect(await lift({projectRoot, results, vcs})).toEqual(nextStepsResult);
+    expect(liftSettings).toHaveBeenCalledWith({projectRoot, results});
   });
 
   it('should apply not the settings lifter if the project is not managed with the settings app', async () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).mockResolvedValue(false);
 
-    expect(await lift({projectRoot, results})).toEqual({});
+    expect(await lift({projectRoot, results, vcs})).toEqual(nextStepsResult);
+    expect(liftSettings).not.toHaveBeenCalledWith({projectRoot, results});
   });
 });

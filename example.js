@@ -23,9 +23,11 @@ await scaffold({
 if (await test({projectRoot})) {
   await lift({
     projectRoot,
+    vcs: {owner: 'account-name', name: 'repository-name'},
     results: {
       projectDetails: {homepage: any.url()},
-      tags: any.listOf(any.word)
+      tags: any.listOf(any.word),
+      nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
     }
   });
 }

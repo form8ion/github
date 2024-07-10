@@ -51,6 +51,7 @@ When('the scaffolder results are processed', async function () {
   this.existingSettingsContent = {...any.simpleObject(), repository: any.simpleObject()};
 
   stubbedFs({
+    ...this.netrcContent && {[`${process.env.HOME}/.netrc`]: this.netrcContent},
     ...this.github && {
       '.github': {
         ...this.settingsApp && {'settings.yml': yaml.dump(this.existingSettingsContent)}
@@ -60,11 +61,13 @@ When('the scaffolder results are processed', async function () {
   });
 
   if (await test({projectRoot: this.projectRoot})) {
-    await lift({
+    this.result = await lift({
       projectRoot: this.projectRoot,
+      vcs: {name: this.projectName, owner: this.githubUser},
       results: {
         projectDetails: this.projectDetails,
-        tags: this.tags
+        tags: this.tags,
+        nextSteps: this.nextSteps
       }
     });
   }

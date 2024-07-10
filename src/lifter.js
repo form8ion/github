@@ -1,9 +1,11 @@
 import {test as repositoryMaintainedWithRepositorySettings, lift as liftSettings} from '@form8ion/repository-settings';
 
-export default async function ({projectRoot, results}) {
+import nextSteps from './next-steps/next-steps.js';
+
+export default async function ({projectRoot, vcs, results}) {
   if (await repositoryMaintainedWithRepositorySettings({projectRoot})) {
-    return liftSettings({projectRoot, results});
+    await liftSettings({projectRoot, results});
   }
 
-  return {};
+  return nextSteps({results, vcs});
 }
