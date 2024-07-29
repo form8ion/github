@@ -70,10 +70,10 @@ export default async function ({name, owner, visibility, octokit}) {
 
   const {data: {login: authenticatedUser}} = await octokit.users.getAuthenticated();
 
-  if (owner === authenticatedUser) return {vcs: await createForUser(octokit, owner, name, visibility)};
+  if (owner === authenticatedUser) return {vcs: {...await createForUser(octokit, owner, name, visibility), name}};
 
   if (await authenticatedUserIsMemberOfRequestedOrganization(owner, octokit)) {
-    return {vcs: await createForOrganization(octokit, owner, name, visibility)};
+    return {vcs: {...await createForOrganization(octokit, owner, name, visibility), name}};
   }
 
   throw new Error(`User ${authenticatedUser} does not have access to create a repository in the ${owner} account`);

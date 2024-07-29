@@ -40,7 +40,7 @@ describe('creation', () => {
       });
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
     });
 
     it('should not create the repository when it already exists', async () => {
@@ -50,7 +50,7 @@ describe('creation', () => {
       when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
       expect(createForAuthenticatedUser).not.toHaveBeenCalled();
     });
 
@@ -64,7 +64,7 @@ describe('creation', () => {
       });
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
     });
 
     it('should rethrow other errors', async () => {
@@ -105,7 +105,7 @@ describe('creation', () => {
       });
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
     });
 
     it('should not create the repository when it already exists', async () => {
@@ -115,7 +115,7 @@ describe('creation', () => {
       when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
       expect(createInOrg).not.toHaveBeenCalled();
     });
 
@@ -129,7 +129,7 @@ describe('creation', () => {
       });
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client}))
-        .toEqual({vcs: {sshUrl, htmlUrl}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name}});
     });
 
     it('should rethrow other errors', async () => {

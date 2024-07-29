@@ -126,6 +126,7 @@ Given('the project is not versioned on GitHub', async function () {
 Then('repository details are returned', async function () {
   assert.equal(this.result.vcs.sshUrl, sshUrl);
   assert.equal(this.result.vcs.htmlUrl, htmlUrl);
+  assert.equal(this.result.vcs.name, this.projectName);
 });
 
 Then('no repository details are returned', async function () {
