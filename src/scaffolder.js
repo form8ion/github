@@ -5,7 +5,7 @@ import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 import {factory as getAuthenticatedOctokit} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 
-export default async function ({name, owner, visibility, description, projectRoot}) {
+export default async function ({projectName, owner, visibility, description, projectRoot}) {
   info('Initializing GitHub');
 
   const octokit = getAuthenticatedOctokit();
@@ -13,8 +13,8 @@ export default async function ({name, owner, visibility, description, projectRoo
   await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
 
   try {
-    const repositoryResult = await scaffoldRepository({octokit, name, owner, visibility});
-    await scaffoldSettings({projectRoot, projectName: name, visibility, description});
+    const repositoryResult = await scaffoldRepository({octokit, name: projectName, owner, visibility});
+    await scaffoldSettings({projectRoot, projectName, visibility, description});
 
     return repositoryResult;
   } catch (e) {

@@ -32,7 +32,7 @@ describe('scaffolder', () => {
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockResolvedValue(repositoryResult);
 
-    expect(await scaffold({name, owner, visibility, projectRoot, description}))
+    expect(await scaffold({projectName: name, owner, visibility, projectRoot, description}))
       .toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
     expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
@@ -44,7 +44,7 @@ describe('scaffolder', () => {
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockRejectedValue(error);
 
-    await expect(scaffold({name, owner, visibility, projectRoot, description}))
+    await expect(scaffold({projectName: name, owner, visibility, projectRoot, description}))
       .rejects.toThrowError(error);
   });
 });

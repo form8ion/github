@@ -35,7 +35,7 @@ When('the project is scaffolded', async function () {
   try {
     this.result = await scaffold({
       projectRoot: this.projectRoot,
-      name: this.projectName,
+      projectName: this.projectName,
       owner: this.githubUser,
       visibility: this.projectVisibility,
       description: this.projectDescription
