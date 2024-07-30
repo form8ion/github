@@ -100,12 +100,23 @@ import {scaffold, test, lift} from '@form8ion/github';
 ```javascript
 const projectRoot = process.cwd();
 
-await scaffold({
-  projectRoot,
-  projectName: 'foo',
-  visibility: any.fromList(['Public', 'Private']),
-  description: any.sentence()
-});
+await scaffold(
+  {
+    projectRoot,
+    projectName: 'foo',
+    visibility: any.fromList(['Public', 'Private']),
+    description: any.sentence()
+  },
+  {
+    prompt: ({questions, id}) => {
+      if ('GITHUB_ACCOUNT' === id) {
+        return questions.map(question => `The answer to "${question}" is ${any.word()}`);
+      }
+
+      throw new Error(`Unknown prompt with ID: ${id}`);
+    }
+  }
+);
 
 if (await test({projectRoot})) {
   await lift({
