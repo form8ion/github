@@ -127,6 +127,7 @@ Then('repository details are returned', async function () {
   assert.equal(this.result.vcs.sshUrl, sshUrl);
   assert.equal(this.result.vcs.htmlUrl, htmlUrl);
   assert.equal(this.result.vcs.name, this.projectName);
+  assert.equal(this.result.vcs.host, 'github');
 });
 
 Then('no repository details are returned', async function () {
