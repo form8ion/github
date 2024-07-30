@@ -15,6 +15,7 @@ vi.mock('./octokit/factory.js');
 vi.mock('./repository/index.js');
 
 describe('scaffolder', () => {
+  let prompt;
   const projectRoot = any.string();
   const name = any.word();
   const owner = any.word();
@@ -24,6 +25,8 @@ describe('scaffolder', () => {
 
   beforeEach(() => {
     octokitFactory.mockReturnValue(octokitClient);
+
+    prompt = vi.fn();
   });
 
   it('should create the github repository', async () => {
@@ -31,9 +34,17 @@ describe('scaffolder', () => {
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockResolvedValue(repositoryResult);
+    when(prompt)
+      .calledWith({
+        questions: [{name: 'githubAccount', message: 'Which GitHub account should the repository be hosted within?'}],
+        id: 'GITHUB_ACCOUNT'
+      })
+      .mockResolvedValue({githubAccount: owner});
 
-    expect(await scaffold({name, owner, visibility, projectRoot, description}))
-      .toEqual(repositoryResult);
+    expect(await scaffold(
+      {projectName: name, visibility, projectRoot, description},
+      {prompt}
+    )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
     expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
   });
@@ -43,8 +54,9 @@ describe('scaffolder', () => {
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockRejectedValue(error);
+    when(prompt).mockResolvedValue({githubAccount: owner});
 
-    await expect(scaffold({name, owner, visibility, projectRoot, description}))
+    await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
       .rejects.toThrowError(error);
   });
 });

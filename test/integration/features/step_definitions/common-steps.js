@@ -33,13 +33,23 @@ When('the project is scaffolded', async function () {
   });
 
   try {
-    this.result = await scaffold({
-      projectRoot: this.projectRoot,
-      name: this.projectName,
-      owner: this.githubUser,
-      visibility: this.projectVisibility,
-      description: this.projectDescription
-    });
+    this.result = await scaffold(
+      {
+        projectRoot: this.projectRoot,
+        projectName: this.projectName,
+        visibility: this.projectVisibility,
+        description: this.projectDescription
+      },
+      {
+        prompt: ({id}) => {
+          if ('GITHUB_ACCOUNT' === id) {
+            return {githubAccount: this.githubUser};
+          }
+
+          throw new Error(`Unknown prompt with ID: ${id}`);
+        }
+      }
+    );
   } catch (err) {
     debug(err);
     this.scaffoldError = err;
