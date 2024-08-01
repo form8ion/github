@@ -41,13 +41,7 @@ When('the project is scaffolded', async function () {
         description: this.projectDescription
       },
       {
-        prompt: ({id}) => {
-          if (promptConstants.ids.GITHUB_DETAILS === id) {
-            return {githubAccount: this.githubUser};
-          }
-
-          throw new Error(`Unknown prompt with ID: ${id}`);
-        }
+        prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser})
       }
     );
   } catch (err) {

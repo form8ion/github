@@ -3,7 +3,7 @@
 import {resolve} from 'path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
-import {scaffold, test, lift, promptConstants} from './lib/index.js';
+import {lift, promptConstants, scaffold, test} from './lib/index.js';
 
 // remark-usage-ignore-next
 stubbedFs({node_modules: stubbedFs.load(resolve('node_modules'))});
@@ -20,9 +20,12 @@ await scaffold(
     description: any.sentence()
   },
   {
-    prompt: ({questions, id}) => {
-      if (promptConstants.ids.GITHUB_DETAILS === id) {
-        return questions.map(question => `The answer to "${question}" is ${any.word()}`);
+    prompt: async ({id}) => {
+      const {questionNames, ids} = promptConstants;
+      const expectedPromptId = ids.GITHUB_DETAILS;
+
+      if (expectedPromptId === id) {
+        return {[questionNames[expectedPromptId].GITHUB_ACCOUNT]: any.word()};
       }
 
       throw new Error(`Unknown prompt with ID: ${id}`);

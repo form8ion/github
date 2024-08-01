@@ -23,6 +23,8 @@ describe('scaffolder', () => {
   const visibility = any.word();
   const description = any.sentence();
   const octokitClient = any.simpleObject();
+  const promptId = constants.ids.GITHUB_DETAILS;
+  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
 
   beforeEach(() => {
     octokitFactory.mockReturnValue(octokitClient);
@@ -37,10 +39,13 @@ describe('scaffolder', () => {
       .mockResolvedValue(repositoryResult);
     when(prompt)
       .calledWith({
-        questions: [{name: 'githubAccount', message: 'Which GitHub account should the repository be hosted within?'}],
-        id: constants.ids.GITHUB_DETAILS
+        questions: [{
+          name: githubAccountQuestionName,
+          message: 'Which GitHub account should the repository be hosted within?'
+        }],
+        id: promptId
       })
-      .mockResolvedValue({githubAccount: owner});
+      .mockResolvedValue({[githubAccountQuestionName]: owner});
 
     expect(await scaffold(
       {projectName: name, visibility, projectRoot, description},
@@ -55,7 +60,7 @@ describe('scaffolder', () => {
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockRejectedValue(error);
-    when(prompt).mockResolvedValue({githubAccount: owner});
+    when(prompt).mockResolvedValue({[githubAccountQuestionName]: owner});
 
     await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
       .rejects.toThrowError(error);
