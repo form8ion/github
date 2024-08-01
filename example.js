@@ -3,7 +3,7 @@
 import {resolve} from 'path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
-import {scaffold, test, lift} from './lib/index.js';
+import {scaffold, test, lift, promptConstants} from './lib/index.js';
 
 // remark-usage-ignore-next
 stubbedFs({node_modules: stubbedFs.load(resolve('node_modules'))});
@@ -21,7 +21,7 @@ await scaffold(
   },
   {
     prompt: ({questions, id}) => {
-      if ('GITHUB_ACCOUNT' === id) {
+      if (promptConstants.ids.GITHUB_DETAILS === id) {
         return questions.map(question => `The answer to "${question}" is ${any.word()}`);
       }
 

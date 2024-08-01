@@ -11,11 +11,11 @@ const debug = debugTest('test');
 const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-disable-line no-underscore-dangle
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
-let scaffold, test, lift;
+let scaffold, test, lift, promptConstants;
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
-  ({scaffold, test, lift} = await import('@form8ion/github'));
+  ({scaffold, test, lift, promptConstants} = await import('@form8ion/github'));
 
   this.projectName = any.word();
   this.projectDescription = any.sentence();
@@ -42,7 +42,7 @@ When('the project is scaffolded', async function () {
       },
       {
         prompt: ({id}) => {
-          if ('GITHUB_ACCOUNT' === id) {
+          if (promptConstants.ids.GITHUB_DETAILS === id) {
             return {githubAccount: this.githubUser};
           }
 

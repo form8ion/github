@@ -8,6 +8,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {factory as octokitFactory} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
+import {constants} from './prompt/index.js';
 
 vi.mock('node:fs');
 vi.mock('@form8ion/repository-settings');
@@ -37,7 +38,7 @@ describe('scaffolder', () => {
     when(prompt)
       .calledWith({
         questions: [{name: 'githubAccount', message: 'Which GitHub account should the repository be hosted within?'}],
-        id: 'GITHUB_ACCOUNT'
+        id: constants.ids.GITHUB_DETAILS
       })
       .mockResolvedValue({githubAccount: owner});
 
