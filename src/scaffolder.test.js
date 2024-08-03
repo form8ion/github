@@ -8,6 +8,7 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 import {factory as octokitFactory} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
+import {constants} from './prompt/index.js';
 
 vi.mock('node:fs');
 vi.mock('@form8ion/repository-settings');
@@ -15,15 +16,20 @@ vi.mock('./octokit/factory.js');
 vi.mock('./repository/index.js');
 
 describe('scaffolder', () => {
+  let prompt;
   const projectRoot = any.string();
   const name = any.word();
   const owner = any.word();
   const visibility = any.word();
   const description = any.sentence();
   const octokitClient = any.simpleObject();
+  const promptId = constants.ids.GITHUB_DETAILS;
+  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
 
   beforeEach(() => {
     octokitFactory.mockReturnValue(octokitClient);
+
+    prompt = vi.fn();
   });
 
   it('should create the github repository', async () => {
@@ -31,9 +37,20 @@ describe('scaffolder', () => {
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockResolvedValue(repositoryResult);
+    when(prompt)
+      .calledWith({
+        questions: [{
+          name: githubAccountQuestionName,
+          message: 'Which GitHub account should the repository be hosted within?'
+        }],
+        id: promptId
+      })
+      .mockResolvedValue({[githubAccountQuestionName]: owner});
 
-    expect(await scaffold({name, owner, visibility, projectRoot, description}))
-      .toEqual(repositoryResult);
+    expect(await scaffold(
+      {projectName: name, visibility, projectRoot, description},
+      {prompt}
+    )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
     expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
   });
@@ -43,8 +60,9 @@ describe('scaffolder', () => {
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
       .mockRejectedValue(error);
+    when(prompt).mockResolvedValue({[githubAccountQuestionName]: owner});
 
-    await expect(scaffold({name, owner, visibility, projectRoot, description}))
+    await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
       .rejects.toThrowError(error);
   });
 });

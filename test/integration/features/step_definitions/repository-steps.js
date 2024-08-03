@@ -124,13 +124,15 @@ Given('the project is not versioned on GitHub', async function () {
 });
 
 Then('repository details are returned', async function () {
-  assert.equal(this.result.sshUrl, sshUrl);
-  assert.equal(this.result.htmlUrl, htmlUrl);
+  assert.equal(this.result.vcs.sshUrl, sshUrl);
+  assert.equal(this.result.vcs.htmlUrl, htmlUrl);
+  assert.equal(this.result.vcs.name, this.projectName);
+  assert.equal(this.result.vcs.owner, this.githubUser);
+  assert.equal(this.result.vcs.host, 'github');
 });
 
 Then('no repository details are returned', async function () {
-  assert.equal(this.result.sshUrl, undefined);
-  assert.equal(this.result.htmlUrl, undefined);
+  assert.equal(this.result.vcs, undefined);
 });
 
 Then('no repository is created on GitHub', async function () {

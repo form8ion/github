@@ -1,20 +1,38 @@
 import {promises as fs} from 'node:fs';
-import {info, error} from '@travi/cli-messages';
+import {error, info} from '@travi/cli-messages';
 import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
+import {constants} from './prompt/index.js';
 import {factory as getAuthenticatedOctokit} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 
-export default async function ({name, owner, visibility, description, projectRoot}) {
+async function promptForOwner(prompt) {
+  const promptId = constants.ids.GITHUB_DETAILS;
+  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
+
+  const {[githubAccountQuestionName]: owner} = await prompt({
+    id: promptId,
+    questions: [{
+      name: githubAccountQuestionName,
+      message: 'Which GitHub account should the repository be hosted within?'
+    }]
+  });
+
+  return owner;
+}
+
+export default async function ({projectName, visibility, description, projectRoot}, {prompt}) {
   info('Initializing GitHub');
 
   const octokit = getAuthenticatedOctokit();
-
-  await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
+  const [owner] = await Promise.all([
+    promptForOwner(prompt),
+    fs.mkdir(`${projectRoot}/.github`, {recursive: true})
+  ]);
 
   try {
-    const repositoryResult = await scaffoldRepository({octokit, name, owner, visibility});
-    await scaffoldSettings({projectRoot, projectName: name, visibility, description});
+    const repositoryResult = await scaffoldRepository({octokit, name: projectName, owner, visibility});
+    await scaffoldSettings({projectRoot, projectName, visibility, description});
 
     return repositoryResult;
   } catch (e) {
