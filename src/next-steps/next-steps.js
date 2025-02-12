@@ -6,8 +6,9 @@ export default async function ({results: {nextSteps}, vcs: {name: repoName, owne
   const octokit = getAuthenticatedOctokit();
 
   if (octokit && nextSteps) {
+    const deduplicatedNextSteps = Array.from(new Set(nextSteps));
     const issues = await Promise.all(
-      nextSteps.map(({summary, description}) => octokit.issues.create({
+      deduplicatedNextSteps.map(({summary, description}) => octokit.issues.create({
         title: summary,
         body: description,
         owner,
@@ -16,7 +17,7 @@ export default async function ({results: {nextSteps}, vcs: {name: repoName, owne
     );
 
     return {
-      nextSteps: zip(issues, nextSteps).map(([{data: issue}, step]) => ({...step, url: issue.url}))
+      nextSteps: zip(issues, deduplicatedNextSteps).map(([{data: issue}, step]) => ({...step, url: issue.url}))
     };
   }
 
