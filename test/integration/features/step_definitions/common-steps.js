@@ -71,7 +71,7 @@ When('the scaffolder results are processed', async function () {
       results: {
         projectDetails: this.projectDetails,
         tags: this.tags,
-        ...this.nextSteps && {nextSteps: [...this.nextSteps, ...this.nextSteps]}
+        ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
       }
     });
   }

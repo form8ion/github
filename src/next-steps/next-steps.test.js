@@ -42,7 +42,7 @@ describe('next-steps', () => {
         .mockResolvedValue({data: {url}});
     });
 
-    expect(await nextSteps({results: {nextSteps: [...steps, ...steps]}, vcs: {owner, name: repoName}}))
+    expect(await nextSteps({results: {nextSteps: [...steps, ...structuredClone(steps)]}, vcs: {owner, name: repoName}}))
       .toEqual({nextSteps: zip(issueUrls, steps).map(([url, step]) => ({...step, url}))});
   });
 });
