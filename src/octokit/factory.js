@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import {Octokit} from '@octokit/rest';
 import {createNetrcAuth} from 'octokit-auth-netrc';
 import {info, warn} from '@travi/cli-messages';
