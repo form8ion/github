@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import * as octokit from '@octokit/rest';
 import {createNetrcAuth} from 'octokit-auth-netrc';
 
