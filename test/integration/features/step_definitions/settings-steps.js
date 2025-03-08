@@ -42,7 +42,30 @@ Then('properties are updated in the settings file', async function () {
         ...this.existingSettingsContent.repository,
         ...this.homepage && {homepage: this.homepage},
         topics: this.tags.join(', ')
-      }
+      },
+      branches: [
+        {
+          name: 'master',
+          protection: null
+        }
+      ],
+      rulesets: [{
+        conditions: {
+          ref_name: {
+            exclude: [],
+            include: [
+              '~DEFAULT_BRANCH'
+            ]
+          }
+        },
+        enforcement: 'active',
+        name: 'prevent destruction of the default branch',
+        rules: [
+          {type: 'deletion'},
+          {type: 'non_fast_forward'}
+        ],
+        target: 'branch'
+      }]
     }
   );
 });
