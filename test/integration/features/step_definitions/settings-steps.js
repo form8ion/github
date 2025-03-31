@@ -43,29 +43,30 @@ Then('properties are updated in the settings file', async function () {
         ...this.homepage && {homepage: this.homepage},
         topics: this.tags.join(', ')
       },
-      branches: [
+      branches: [{name: 'master', protection: null}],
+      rulesets: [
         {
-          name: 'master',
-          protection: null
-        }
-      ],
-      rulesets: [{
-        conditions: {
-          ref_name: {
-            exclude: [],
-            include: [
-              '~DEFAULT_BRANCH'
-            ]
-          }
+          conditions: {ref_name: {exclude: [], include: ['~DEFAULT_BRANCH']}},
+          enforcement: 'active',
+          name: 'prevent destruction of the default branch',
+          rules: [{type: 'deletion'}, {type: 'non_fast_forward'}],
+          target: 'branch'
         },
-        enforcement: 'active',
-        name: 'prevent destruction of the default branch',
-        rules: [
-          {type: 'deletion'},
-          {type: 'non_fast_forward'}
-        ],
-        target: 'branch'
-      }]
+        {
+          name: 'verification must pass',
+          target: 'branch',
+          enforcement: 'active',
+          conditions: {ref_name: {include: ['~DEFAULT_BRANCH'], exclude: []}},
+          rules: [{
+            type: 'required_status_checks',
+            parameters: {
+              strict_required_status_checks_policy: false,
+              required_status_checks: [{context: 'workflow-result', integration_id: 15368}]
+            }
+          }],
+          bypass_actors: [{actor_id: 3208999, actor_type: 'Team', bypass_mode: 'always'}]
+        }
+      ]
     }
   );
 });
