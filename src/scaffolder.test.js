@@ -1,7 +1,7 @@
 import {promises as fs} from 'node:fs';
 import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
-import {when} from 'jest-when';
+import {when} from 'vitest-when';
 import any from '@travi/any';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
@@ -36,7 +36,7 @@ describe('scaffolder', () => {
     const repositoryResult = any.simpleObject();
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
-      .mockResolvedValue(repositoryResult);
+      .thenResolve(repositoryResult);
     when(prompt)
       .calledWith({
         questions: [{
@@ -45,7 +45,7 @@ describe('scaffolder', () => {
         }],
         id: promptId
       })
-      .mockResolvedValue({[githubAccountQuestionName]: owner});
+      .thenResolve({[githubAccountQuestionName]: owner});
 
     expect(await scaffold(
       {projectName: name, visibility, projectRoot, description},
@@ -59,8 +59,14 @@ describe('scaffolder', () => {
     const error = new Error(any.sentence());
     when(scaffoldRepository)
       .calledWith({octokit: octokitClient, name, owner, visibility})
-      .mockRejectedValue(error);
-    when(prompt).mockResolvedValue({[githubAccountQuestionName]: owner});
+      .thenReject(error);
+    when(prompt).calledWith({
+      questions: [{
+        name: githubAccountQuestionName,
+        message: 'Which GitHub account should the repository be hosted within?'
+      }],
+      id: promptId
+    }).thenResolve({[githubAccountQuestionName]: owner});
 
     await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
       .rejects.toThrowError(error);

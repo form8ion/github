@@ -2,7 +2,7 @@ import zip from 'lodash.zip';
 
 import {describe, expect, it, vi} from 'vitest';
 import any from '@travi/any';
-import {when} from 'jest-when';
+import {when} from 'vitest-when';
 
 import {factory as octokitFactory} from '../octokit/factory.js';
 import nextSteps from './next-steps.js';
@@ -39,7 +39,7 @@ describe('next-steps', () => {
     issueUrls.forEach((url, index) => {
       when(create)
         .calledWith({title: summaries[index], body: descriptions[index], owner, repo: repoName})
-        .mockResolvedValue({data: {url}});
+        .thenResolve({data: {url}});
     });
 
     expect(await nextSteps({results: {nextSteps: [...steps, ...structuredClone(steps)]}, vcs: {owner, name: repoName}}))

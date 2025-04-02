@@ -4,7 +4,7 @@ import {createNetrcAuth} from 'octokit-auth-netrc';
 
 import {afterEach, describe, expect, it, vi} from 'vitest';
 import any from '@travi/any';
-import {when} from 'jest-when';
+import {when} from 'vitest-when';
 
 import {factory} from './factory.js';
 
@@ -17,7 +17,7 @@ describe('github client factory', () => {
 
   it('should authenticate the client using the token from netrc', () => {
     const instance = any.simpleObject();
-    when(octokit.Octokit).calledWith({authStrategy: createNetrcAuth}).mockReturnValue(instance);
+    when(octokit.Octokit).calledWith({authStrategy: createNetrcAuth}).thenReturn(instance);
 
     expect(factory()).toBe(instance);
   });
