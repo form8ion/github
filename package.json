@@ -42,8 +42,9 @@
     "lint:js": "eslint . --cache",
     "lint:js:fix": "run-s 'lint:js -- --fix'",
     "lint:publish": "publint --strict",
-    "test": "npm-run-all --print-label build --parallel lint:* --parallel test:*",
-    "lint:engines": "ls-engines"
+    "test": "npm-run-all --print-label --parallel lint:* --parallel test:*",
+    "lint:engines": "ls-engines",
+    "pretest": "run-s build"
   },
   "files": [
     "example.js",
