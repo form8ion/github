@@ -2,7 +2,7 @@ import {StatusCodes} from 'http-status-codes';
 
 import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import any from '@travi/any';
-import {when} from 'jest-when';
+import {when} from 'vitest-when';
 
 import scaffoldRepository from './scaffolder.js';
 
@@ -34,7 +34,7 @@ describe('creation', () => {
       const createForAuthenticatedUser = vi.fn();
       const get = vi.fn();
       const client = {repos: {createForAuthenticatedUser, get}, users: {getAuthenticated}};
-      when(createForAuthenticatedUser).calledWith({name, private: false}).mockResolvedValue(repoDetailsResponse);
+      when(createForAuthenticatedUser).calledWith({name, private: false}).thenResolve(repoDetailsResponse);
       get.mockImplementation(() => {
         throw repoNotFoundError;
       });
@@ -47,7 +47,7 @@ describe('creation', () => {
       const createForAuthenticatedUser = vi.fn();
       const get = vi.fn();
       const client = {repos: {createForAuthenticatedUser, get}, users: {getAuthenticated}};
-      when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
+      when(get).calledWith({owner: account, repo: name}).thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
@@ -58,7 +58,7 @@ describe('creation', () => {
       const createForAuthenticatedUser = vi.fn();
       const get = vi.fn();
       const client = {repos: {createForAuthenticatedUser, get}, users: {getAuthenticated}};
-      when(createForAuthenticatedUser).calledWith({name, private: true}).mockResolvedValue(repoDetailsResponse);
+      when(createForAuthenticatedUser).calledWith({name, private: true}).thenResolve(repoDetailsResponse);
       get.mockImplementation(() => {
         throw repoNotFoundError;
       });
@@ -99,7 +99,7 @@ describe('creation', () => {
       const createInOrg = vi.fn();
       const get = vi.fn();
       const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-      when(createInOrg).calledWith({org: account, name, private: false}).mockResolvedValue(repoDetailsResponse);
+      when(createInOrg).calledWith({org: account, name, private: false}).thenResolve(repoDetailsResponse);
       get.mockImplementation(() => {
         throw repoNotFoundError;
       });
@@ -112,7 +112,7 @@ describe('creation', () => {
       const createInOrg = vi.fn();
       const get = vi.fn();
       const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-      when(get).calledWith({owner: account, repo: name}).mockResolvedValue(repoDetailsResponse);
+      when(get).calledWith({owner: account, repo: name}).thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
@@ -123,7 +123,7 @@ describe('creation', () => {
       const createInOrg = vi.fn();
       const get = vi.fn();
       const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
-      when(createInOrg).calledWith({org: account, name, private: true}).mockResolvedValue(repoDetailsResponse);
+      when(createInOrg).calledWith({org: account, name, private: true}).thenResolve(repoDetailsResponse);
       get.mockImplementation(() => {
         throw repoNotFoundError;
       });
