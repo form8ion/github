@@ -3,7 +3,6 @@ import {error, info} from '@travi/cli-messages';
 import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {constants} from './prompt/index.js';
-import {factory as getAuthenticatedOctokit} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 
 async function promptForOwner(prompt) {
@@ -21,10 +20,9 @@ async function promptForOwner(prompt) {
   return owner;
 }
 
-export default async function ({projectName, visibility, description, projectRoot}, {prompt}) {
+export default async function ({projectName, visibility, description, projectRoot}, {prompt, octokit}) {
   info('Initializing GitHub');
 
-  const octokit = getAuthenticatedOctokit();
   const [owner] = await Promise.all([
     promptForOwner(prompt),
     fs.mkdir(`${projectRoot}/.github`, {recursive: true})

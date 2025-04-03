@@ -57,14 +57,13 @@
   "packageManager": "npm@11.2.0+sha512.3dc9c50ba813a3d54393155a435fe66404b72685ab0e3008f9ae9ed8d81f6104860f07ed2656dd5748c1322d95f3140fa9b19c59a6bba7750fd12285f81866da",
   "dependencies": {
     "@form8ion/core": "^4.6.1",
-    "@form8ion/github-core": "^1.0.0-alpha.1",
+    "@form8ion/github-core": "^1.0.0-alpha.2",
     "@form8ion/repository-settings": "^1.4.0-alpha.1",
     "@octokit/rest": "^21.0.0",
     "@travi/cli-messages": "^1.1.1",
     "deepmerge": "^4.3.1",
     "lodash.uniqby": "^4.7.0",
-    "lodash.zip": "^4.2.0",
-    "octokit-auth-netrc": "^3.1.1"
+    "lodash.zip": "^4.2.0"
   },
   "devDependencies": {
     "@cucumber/cucumber": "11.2.0",
