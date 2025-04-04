@@ -63,10 +63,8 @@ $ npm install @form8ion/github --save-prod
 
 ### Enabling actions against the GitHub API
 
-This plugin leverages the [.netrc strategy](https://github.com/travi/octokit-auth-netrc)
-for [octokit](https://github.com/octokit/rest.js/). Be sure to
-[add your personal access token](https://github.com/travi/octokit-auth-netrc#defining-your-token)
-to leverage the GitHub API integration benefits of this plugin.
+Provide an authenticated octokit instance as the `octokit` property in the
+options
 
 ### Enabling repository configuration with `repository-settings/app`
 
