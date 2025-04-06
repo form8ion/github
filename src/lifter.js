@@ -2,10 +2,10 @@ import {test as repositoryMaintainedWithRepositorySettings, lift as liftSettings
 
 import nextSteps from './next-steps/next-steps.js';
 
-export default async function ({projectRoot, vcs, results}) {
+export default async function ({projectRoot, vcs, results}, {octokit}) {
   if (await repositoryMaintainedWithRepositorySettings({projectRoot})) {
     await liftSettings({projectRoot, results});
   }
 
-  return nextSteps({results, vcs});
+  return nextSteps({results, vcs}, {octokit});
 }

@@ -1,8 +1,9 @@
 // #### Import
 // remark-usage-ignore-next 2
-import {resolve} from 'path';
+import {resolve} from 'node:path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
+import {octokit} from '@form8ion/github-core';
 import {lift, promptConstants, scaffold, test} from './lib/index.js';
 
 // remark-usage-ignore-next
@@ -29,7 +30,8 @@ await scaffold(
       }
 
       throw new Error(`Unknown prompt with ID: ${id}`);
-    }
+    },
+    octokit: octokit.getNetrcAuthenticatedInstance()
   }
 );
 
@@ -42,5 +44,5 @@ if (await test({projectRoot})) {
       tags: any.listOf(any.word),
       nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
     }
-  });
+  }, {octokit: octokit.getNetrcAuthenticatedInstance()});
 }

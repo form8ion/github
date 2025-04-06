@@ -5,7 +5,6 @@ import {when} from 'vitest-when';
 import any from '@travi/any';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import {factory as octokitFactory} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
 import {constants} from './prompt/index.js';
@@ -27,8 +26,6 @@ describe('scaffolder', () => {
   const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
 
   beforeEach(() => {
-    octokitFactory.mockReturnValue(octokitClient);
-
     prompt = vi.fn();
   });
 
@@ -49,7 +46,7 @@ describe('scaffolder', () => {
 
     expect(await scaffold(
       {projectName: name, visibility, projectRoot, description},
-      {prompt}
+      {prompt, octokit: octokitClient}
     )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
     expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
@@ -68,7 +65,7 @@ describe('scaffolder', () => {
       id: promptId
     }).thenResolve({[githubAccountQuestionName]: owner});
 
-    await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
+    await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt, octokit: octokitClient}))
       .rejects.toThrowError(error);
   });
 });
