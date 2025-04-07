@@ -2,7 +2,7 @@ import {test as repositoryMaintainedWithRepositorySettings, lift as liftSettings
 
 import nextSteps from './next-steps/next-steps.js';
 
-export default async function ({projectRoot, vcs, results}, {octokit}) {
+export default async function liftGithub({projectRoot, vcs, results}, {octokit}) {
   if (await repositoryMaintainedWithRepositorySettings({projectRoot})) {
     await liftSettings({projectRoot, results});
   }
