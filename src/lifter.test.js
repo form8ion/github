@@ -16,6 +16,12 @@ describe('lifter', () => {
   const vcs = any.simpleObject();
   const nextStepsResult = any.simpleObject();
   const octokit = any.simpleObject();
+  const logger = {
+    info: () => undefined,
+    success: () => undefined,
+    warn: () => undefined,
+    error: () => undefined
+  };
 
   beforeEach(() => {
     when(nextSteps).calledWith({results, vcs}, {octokit}).thenResolve(nextStepsResult);
@@ -24,14 +30,14 @@ describe('lifter', () => {
   it('should apply the settings lifter if the project is managed with the settings app', async () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).thenResolve(true);
 
-    expect(await lift({projectRoot, results, vcs}, {octokit})).toEqual(nextStepsResult);
+    expect(await lift({projectRoot, results, vcs}, {octokit, logger})).toEqual(nextStepsResult);
     expect(liftSettings).toHaveBeenCalledWith({projectRoot, results});
   });
 
   it('should apply not the settings lifter if the project is not managed with the settings app', async () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).thenResolve(false);
 
-    expect(await lift({projectRoot, results, vcs}, {octokit})).toEqual(nextStepsResult);
+    expect(await lift({projectRoot, results, vcs}, {octokit, logger})).toEqual(nextStepsResult);
     expect(liftSettings).not.toHaveBeenCalledWith({projectRoot, results});
   });
 });

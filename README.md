@@ -98,6 +98,13 @@ import {lift, promptConstants, scaffold, test} from '@form8ion/github';
 
 ```javascript
 const projectRoot = process.cwd();
+const octokitInstance = octokit.getNetrcAuthenticatedInstance();
+const logger = {
+  info: message => console.error(message),
+  success: message => console.error(message),
+  warn: message => console.error(message),
+  error: message => console.error(message)
+};
 
 await scaffold(
   {
@@ -117,13 +124,8 @@ await scaffold(
 
       throw new Error(`Unknown prompt with ID: ${id}`);
     },
-    octokit: octokit.getNetrcAuthenticatedInstance(),
-    logger: {
-      info: message => console.error(message),
-      success: message => console.error(message),
-      warn: message => console.error(message),
-      error: message => console.error(message)
-    }
+    octokit: octokitInstance,
+    logger
   }
 );
 
@@ -136,7 +138,7 @@ if (await test({projectRoot})) {
       tags: any.listOf(any.word),
       nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
     }
-  }, {octokit: octokit.getNetrcAuthenticatedInstance()});
+  }, {octokit: octokitInstance, logger});
 }
 ```
 

@@ -13,6 +13,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-di
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
 let scaffold, test, lift, promptConstants;
+const logger = {
+  info: () => undefined,
+  success: () => undefined,
+  warn: () => undefined,
+  error: () => undefined
+};
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
@@ -44,12 +50,7 @@ When('the project is scaffolded', async function () {
       {
         prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser}),
         octokit: octokit.getNetrcAuthenticatedInstance(),
-        logger: {
-          info: () => undefined,
-          success: () => undefined,
-          warn: () => undefined,
-          error: () => undefined
-        }
+        logger
       }
     );
   } catch (err) {
@@ -83,7 +84,7 @@ When('the scaffolder results are processed', async function () {
           ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
         }
       },
-      {octokit: octokit.getNetrcAuthenticatedInstance()}
+      {octokit: octokit.getNetrcAuthenticatedInstance(), logger}
     );
   }
 });
