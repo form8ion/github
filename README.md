@@ -117,7 +117,13 @@ await scaffold(
 
       throw new Error(`Unknown prompt with ID: ${id}`);
     },
-    octokit: octokit.getNetrcAuthenticatedInstance()
+    octokit: octokit.getNetrcAuthenticatedInstance(),
+    logger: {
+      info: message => console.error(message),
+      success: message => console.error(message),
+      warn: message => console.error(message),
+      error: message => console.error(message)
+    }
   }
 );
 

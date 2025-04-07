@@ -1,5 +1,6 @@
 // #### Import
-// remark-usage-ignore-next 2
+// remark-usage-ignore-next 3
+/* eslint-disable no-console */
 import {resolve} from 'node:path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
@@ -31,7 +32,13 @@ await scaffold(
 
       throw new Error(`Unknown prompt with ID: ${id}`);
     },
-    octokit: octokit.getNetrcAuthenticatedInstance()
+    octokit: octokit.getNetrcAuthenticatedInstance(),
+    logger: {
+      info: message => console.error(message),
+      success: message => console.error(message),
+      warn: message => console.error(message),
+      error: message => console.error(message)
+    }
   }
 );
 
@@ -46,3 +53,6 @@ if (await test({projectRoot})) {
     }
   }, {octokit: octokit.getNetrcAuthenticatedInstance()});
 }
+
+// remark-usage-ignore-next
+/* eslint-enable no-console */

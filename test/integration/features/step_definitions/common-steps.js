@@ -43,7 +43,13 @@ When('the project is scaffolded', async function () {
       },
       {
         prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser}),
-        octokit: octokit.getNetrcAuthenticatedInstance()
+        octokit: octokit.getNetrcAuthenticatedInstance(),
+        logger: {
+          info: () => undefined,
+          success: () => undefined,
+          warn: () => undefined,
+          error: () => undefined
+        }
       }
     );
   } catch (err) {

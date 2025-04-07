@@ -1,5 +1,4 @@
 import {promises as fs} from 'node:fs';
-import {error, info} from '@travi/cli-messages';
 import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {constants} from './prompt/index.js';
@@ -20,8 +19,11 @@ async function promptForOwner(prompt) {
   return owner;
 }
 
-export default async function ({projectName, visibility, description, projectRoot}, {prompt, octokit}) {
-  info('Initializing GitHub');
+export default async function scaffoldGithub(
+  {projectName, visibility, description, projectRoot},
+  {prompt, octokit, logger}
+) {
+  logger.info('Initializing GitHub');
 
   const [owner] = await Promise.all([
     promptForOwner(prompt),
@@ -29,12 +31,12 @@ export default async function ({projectName, visibility, description, projectRoo
   ]);
 
   try {
-    const repositoryResult = await scaffoldRepository({octokit, name: projectName, owner, visibility});
+    const repositoryResult = await scaffoldRepository({octokit, logger, name: projectName, owner, visibility});
     await scaffoldSettings({projectRoot, projectName, visibility, description});
 
     return repositoryResult;
   } catch (e) {
-    error(e.message);
+    logger.error(e.message);
 
     throw e;
   }
