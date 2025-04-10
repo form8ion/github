@@ -31,13 +31,13 @@ describe('lifter', () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).thenResolve(true);
 
     expect(await lift({projectRoot, results, vcs}, {octokit, logger})).toEqual(nextStepsResult);
-    expect(liftSettings).toHaveBeenCalledWith({projectRoot, results});
+    expect(liftSettings).toHaveBeenCalledWith({projectRoot, results}, {logger});
   });
 
   it('should apply not the settings lifter if the project is not managed with the settings app', async () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).thenResolve(false);
 
     expect(await lift({projectRoot, results, vcs}, {octokit, logger})).toEqual(nextStepsResult);
-    expect(liftSettings).not.toHaveBeenCalledWith({projectRoot, results});
+    expect(liftSettings).not.toHaveBeenCalledWith({projectRoot, results}, {logger});
   });
 });

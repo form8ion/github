@@ -55,7 +55,7 @@ describe('scaffolder', () => {
       {prompt, octokit: octokitClient, logger}
     )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
-    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
+    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description}, {logger});
   });
 
   it('should not scaffold settings when an error occurs scaffolding the repository', async () => {

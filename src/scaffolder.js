@@ -32,7 +32,7 @@ export default async function scaffoldGithub(
 
   try {
     const repositoryResult = await scaffoldRepository({octokit, logger, name: projectName, owner, visibility});
-    await scaffoldSettings({projectRoot, projectName, visibility, description});
+    await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger});
 
     return repositoryResult;
   } catch (e) {

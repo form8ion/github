@@ -6,7 +6,7 @@ export default async function liftGithub({projectRoot, vcs, results}, {octokit, 
   logger.info('Lifting GitHub');
 
   if (await repositoryMaintainedWithRepositorySettings({projectRoot})) {
-    await liftSettings({projectRoot, results});
+    await liftSettings({projectRoot, results}, {logger});
   }
 
   return nextSteps({results, vcs}, {octokit});
