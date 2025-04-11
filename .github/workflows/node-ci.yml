@@ -20,9 +20,8 @@ jobs:
     strategy:
       matrix:
         node:
-          - 18.17.0
-          - 20.6.1
-          - 22
+          - 20.18.0
+          - 22.11.0
           - 23
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -46,6 +45,9 @@ jobs:
       - run: npm install --global corepack@latest
       - run: corepack npm audit signatures
       - run: npm test
+      - run: npx @gravityci/cli ./lib/
+        env:
+          GRAVITY_TOKEN: ${{ secrets.GRAVITY_TOKEN }}
       - uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
   release:
     needs:
