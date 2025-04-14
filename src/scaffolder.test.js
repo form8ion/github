@@ -5,7 +5,6 @@ import {when} from 'vitest-when';
 import any from '@travi/any';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import {factory as octokitFactory} from './octokit/factory.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
 import {constants} from './prompt/index.js';
@@ -25,17 +24,21 @@ describe('scaffolder', () => {
   const octokitClient = any.simpleObject();
   const promptId = constants.ids.GITHUB_DETAILS;
   const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
+  const logger = {
+    info: () => undefined,
+    success: () => undefined,
+    warn: () => undefined,
+    error: () => undefined
+  };
 
   beforeEach(() => {
-    octokitFactory.mockReturnValue(octokitClient);
-
     prompt = vi.fn();
   });
 
   it('should create the github repository', async () => {
     const repositoryResult = any.simpleObject();
     when(scaffoldRepository)
-      .calledWith({octokit: octokitClient, name, owner, visibility})
+      .calledWith({octokit: octokitClient, logger, name, owner, visibility})
       .thenResolve(repositoryResult);
     when(prompt)
       .calledWith({
@@ -49,16 +52,16 @@ describe('scaffolder', () => {
 
     expect(await scaffold(
       {projectName: name, visibility, projectRoot, description},
-      {prompt}
+      {prompt, octokit: octokitClient, logger}
     )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
-    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description});
+    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description}, {logger});
   });
 
   it('should not scaffold settings when an error occurs scaffolding the repository', async () => {
     const error = new Error(any.sentence());
     when(scaffoldRepository)
-      .calledWith({octokit: octokitClient, name, owner, visibility})
+      .calledWith({octokit: octokitClient, logger, name, owner, visibility})
       .thenReject(error);
     when(prompt).calledWith({
       questions: [{
@@ -68,7 +71,9 @@ describe('scaffolder', () => {
       id: promptId
     }).thenResolve({[githubAccountQuestionName]: owner});
 
-    await expect(scaffold({projectName: name, visibility, projectRoot, description}, {prompt}))
-      .rejects.toThrowError(error);
+    await expect(scaffold(
+      {projectName: name, visibility, projectRoot, description},
+      {prompt, octokit: octokitClient, logger}
+    )).rejects.toThrowError(error);
   });
 });

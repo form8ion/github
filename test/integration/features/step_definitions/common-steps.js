@@ -1,5 +1,6 @@
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {octokit} from '@form8ion/github-core';
 
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
@@ -12,6 +13,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-di
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
 let scaffold, test, lift, promptConstants;
+const logger = {
+  info: () => undefined,
+  success: () => undefined,
+  warn: () => undefined,
+  error: () => undefined
+};
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
@@ -41,7 +48,9 @@ When('the project is scaffolded', async function () {
         description: this.projectDescription
       },
       {
-        prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser})
+        prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser}),
+        octokit: octokit.getNetrcAuthenticatedInstance(),
+        logger
       }
     );
   } catch (err) {
@@ -65,14 +74,17 @@ When('the scaffolder results are processed', async function () {
   });
 
   if (await test({projectRoot: this.projectRoot})) {
-    this.result = await lift({
-      projectRoot: this.projectRoot,
-      vcs: {name: this.projectName, owner: this.githubUser},
-      results: {
-        projectDetails: this.projectDetails,
-        tags: this.tags,
-        ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
-      }
-    });
+    this.result = await lift(
+      {
+        projectRoot: this.projectRoot,
+        vcs: {name: this.projectName, owner: this.githubUser},
+        results: {
+          projectDetails: this.projectDetails,
+          tags: this.tags,
+          ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
+        }
+      },
+      {octokit: octokit.getNetrcAuthenticatedInstance(), logger}
+    );
   }
 });

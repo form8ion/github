@@ -1,8 +1,9 @@
 // #### Import
 // remark-usage-ignore-next 2
-import {resolve} from 'path';
+import {resolve} from 'node:path';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
+import {octokit} from '@form8ion/github-core';
 import {lift, promptConstants, scaffold, test} from './lib/index.js';
 
 // remark-usage-ignore-next
@@ -10,7 +11,16 @@ stubbedFs({node_modules: stubbedFs.load(resolve('node_modules'))});
 
 // #### Execute
 
+// remark-usage-ignore-next
+/* eslint-disable no-console */
 const projectRoot = process.cwd();
+const octokitInstance = octokit.getNetrcAuthenticatedInstance();
+const logger = {
+  info: message => console.error(message),
+  success: message => console.error(message),
+  warn: message => console.error(message),
+  error: message => console.error(message)
+};
 
 await scaffold(
   {
@@ -29,7 +39,9 @@ await scaffold(
       }
 
       throw new Error(`Unknown prompt with ID: ${id}`);
-    }
+    },
+    octokit: octokitInstance,
+    logger
   }
 );
 
@@ -42,5 +54,8 @@ if (await test({projectRoot})) {
       tags: any.listOf(any.word),
       nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
     }
-  });
+  }, {octokit: octokitInstance, logger});
 }
+
+// remark-usage-ignore-next
+/* eslint-enable no-console */
