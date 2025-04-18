@@ -31,7 +31,7 @@ describe('lifter', () => {
     when(repositoryMaintainedWithRepositorySettings).calledWith({projectRoot}).thenResolve(true);
 
     expect(await lift({projectRoot, results, vcs}, {octokit, logger})).toEqual(nextStepsResult);
-    expect(liftSettings).toHaveBeenCalledWith({projectRoot, results}, {logger});
+    expect(liftSettings).toHaveBeenCalledWith({projectRoot, results, vcs}, {logger});
   });
 
   it('should apply not the settings lifter if the project is not managed with the settings app', async () => {
