@@ -46,15 +46,31 @@ await scaffold(
 );
 
 if (await test({projectRoot})) {
-  await lift({
-    projectRoot,
-    vcs: {owner: 'account-name', name: 'repository-name'},
-    results: {
-      projectDetails: {homepage: any.url()},
-      tags: any.listOf(any.word),
-      nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
+  await lift(
+    {
+      projectRoot,
+      vcs: {owner: 'account-name', name: 'repository-name'},
+      results: {
+        projectDetails: {homepage: any.url()},
+        tags: any.listOf(any.word),
+        nextSteps: any.listOf(() => ({summary: any.sentence(), description: any.sentence()}))
+      }
+    },
+    {
+      octokit: octokitInstance,
+      logger,
+      prompt: async ({id}) => {
+        const {questionNames, ids} = promptConstants;
+        const expectedPromptId = ids.REQUIRED_CHECK_BYPASS;
+
+        if (expectedPromptId === id) {
+          return {[questionNames[expectedPromptId].CHECK_BYPASS_TEAM]: any.integer()};
+        }
+
+        throw new Error(`Unknown prompt with ID: ${id}`);
+      }
     }
-  }, {octokit: octokitInstance, logger});
+  );
 }
 
 // remark-usage-ignore-next

@@ -84,7 +84,11 @@ When('the scaffolder results are processed', async function () {
           ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
         }
       },
-      {octokit: octokit.getNetrcAuthenticatedInstance(), logger}
+      {
+        octokit: octokit.getNetrcAuthenticatedInstance(),
+        logger,
+        prompt: ({id}) => ({[promptConstants.questionNames[id].CHECK_BYPASS_TEAM]: this.maintenanceTeamId})
+      }
     );
   }
 });

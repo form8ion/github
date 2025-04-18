@@ -64,7 +64,7 @@ Then('properties are updated in the settings file', async function () {
               required_status_checks: [{context: 'workflow-result', integration_id: 15368}]
             }
           }],
-          bypass_actors: [{actor_id: 3208999, actor_type: 'Team', bypass_mode: 'always'}]
+          bypass_actors: [{actor_id: this.maintenanceTeamId, actor_type: 'Team', bypass_mode: 'always'}]
         }
       ]
     }
