@@ -48,7 +48,20 @@ When('the project is scaffolded', async function () {
         description: this.projectDescription
       },
       {
-        prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser}),
+        prompt: ({id}) => {
+          const {questionNames, ids} = promptConstants;
+          const githubDetailsPromptId = ids.GITHUB_DETAILS;
+          const repositorySettingsPromptId = ids.ADMIN_SETTINGS;
+
+          switch (id) {
+            case githubDetailsPromptId:
+              return {[questionNames[githubDetailsPromptId].GITHUB_ACCOUNT]: this.githubUser};
+            case repositorySettingsPromptId:
+              return {[questionNames[repositorySettingsPromptId].SETTINGS_MANAGED_AS_CODE]: this.useSettingsApp};
+            default:
+              throw new Error(`Unknown prompt with ID: ${id}`);
+          }
+        },
         octokit: octokit.getNetrcAuthenticatedInstance(),
         logger
       }

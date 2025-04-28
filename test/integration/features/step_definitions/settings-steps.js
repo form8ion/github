@@ -3,7 +3,11 @@ import yaml from 'js-yaml';
 import {fileExists} from '@form8ion/core';
 
 import assert from 'node:assert';
-import {Given, Then} from '@cucumber/cucumber';
+import {Before, Given, Then} from '@cucumber/cucumber';
+
+Before(function () {
+  this.useSettingsApp = true;
+});
 
 Given('the repository settings are managed by the settings app', async function () {
   this.settingsApp = true;
@@ -11,6 +15,10 @@ Given('the repository settings are managed by the settings app', async function 
 
 Given('the repository settings are not managed by the settings app', async function () {
   this.settingsApp = false;
+});
+
+Given('the admin settings should not be managed by the repository-settings app', async function () {
+  this.useSettingsApp = false;
 });
 
 Then('repository settings are configured', async function () {

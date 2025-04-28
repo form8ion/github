@@ -1,17 +1,16 @@
 import {promises as fs} from 'node:fs';
-import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {when} from 'vitest-when';
 import any from '@travi/any';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
+import {constants} from './prompt/index.js';
+import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
-import {constants} from './prompt/index.js';
 
 vi.mock('node:fs');
-vi.mock('@form8ion/repository-settings');
-vi.mock('./octokit/factory.js');
+vi.mock('./settings/index.js');
 vi.mock('./repository/index.js');
 
 describe('scaffolder', () => {
@@ -55,7 +54,10 @@ describe('scaffolder', () => {
       {prompt, octokit: octokitClient, logger}
     )).toEqual(repositoryResult);
     expect(fs.mkdir).toHaveBeenCalledWith(`${projectRoot}/.github`, {recursive: true});
-    expect(scaffoldSettings).toHaveBeenCalledWith({projectRoot, projectName: name, visibility, description}, {logger});
+    expect(scaffoldSettings).toHaveBeenCalledWith(
+      {projectRoot, projectName: name, visibility, description},
+      {logger, prompt}
+    );
   });
 
   it('should not scaffold settings when an error occurs scaffolding the repository', async () => {

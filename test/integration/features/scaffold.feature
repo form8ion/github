@@ -85,3 +85,14 @@ Feature: Scaffolder
     But the .github directory was created
     And no repository settings are configured
     And and an authorization error is thrown
+
+  Scenario: admin settings not managed by the repository-settings app
+    Given netrc contains a GitHub token
+    And no repository exists for the "user" on GitHub
+    And the visibility of the repository should be "Public"
+    But the admin settings should not be managed by the repository-settings app
+    When the project is scaffolded
+    Then a repository is created on GitHub
+    And the .github directory was created
+    And repository details are returned
+    And no repository settings are configured

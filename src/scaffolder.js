@@ -1,7 +1,7 @@
 import {promises as fs} from 'node:fs';
-import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
 import {constants} from './prompt/index.js';
+import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 
 async function promptForOwner(prompt) {
@@ -32,7 +32,7 @@ export default async function scaffoldGithub(
 
   try {
     const repositoryResult = await scaffoldRepository({octokit, logger, name: projectName, owner, visibility});
-    await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger});
+    await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger, prompt});
 
     return repositoryResult;
   } catch (e) {
