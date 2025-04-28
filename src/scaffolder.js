@@ -1,23 +1,8 @@
 import {promises as fs} from 'node:fs';
 
-import {constants} from './prompt/index.js';
 import {scaffold as scaffoldSettings} from './settings/index.js';
+import promptForRepositoryOwner from './repository/prompt.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
-
-async function promptForOwner(prompt) {
-  const promptId = constants.ids.GITHUB_DETAILS;
-  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
-
-  const {[githubAccountQuestionName]: owner} = await prompt({
-    id: promptId,
-    questions: [{
-      name: githubAccountQuestionName,
-      message: 'Which GitHub account should the repository be hosted within?'
-    }]
-  });
-
-  return owner;
-}
 
 export default async function scaffoldGithub(
   {projectName, visibility, description, projectRoot},
@@ -26,7 +11,7 @@ export default async function scaffoldGithub(
   logger.info('Initializing GitHub');
 
   const [owner] = await Promise.all([
-    promptForOwner(prompt),
+    promptForRepositoryOwner(prompt),
     fs.mkdir(`${projectRoot}/.github`, {recursive: true})
   ]);
 
