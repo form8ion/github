@@ -4,7 +4,6 @@ import {when} from 'vitest-when';
 import any from '@travi/any';
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import {constants} from './prompt/index.js';
 import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
 import scaffold from './scaffolder.js';
@@ -17,12 +16,9 @@ describe('scaffolder', () => {
   let prompt;
   const projectRoot = any.string();
   const name = any.word();
-  const owner = any.word();
   const visibility = any.word();
   const description = any.sentence();
   const octokitClient = any.simpleObject();
-  const promptId = constants.ids.GITHUB_DETAILS;
-  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
   const logger = {
     info: () => undefined,
     success: () => undefined,
@@ -37,17 +33,8 @@ describe('scaffolder', () => {
   it('should create the github repository', async () => {
     const repositoryResult = any.simpleObject();
     when(scaffoldRepository)
-      .calledWith({octokit: octokitClient, logger, name, owner, visibility})
+      .calledWith({name, visibility}, {octokit: octokitClient, logger, prompt})
       .thenResolve(repositoryResult);
-    when(prompt)
-      .calledWith({
-        questions: [{
-          name: githubAccountQuestionName,
-          message: 'Which GitHub account should the repository be hosted within?'
-        }],
-        id: promptId
-      })
-      .thenResolve({[githubAccountQuestionName]: owner});
 
     expect(await scaffold(
       {projectName: name, visibility, projectRoot, description},
@@ -63,15 +50,8 @@ describe('scaffolder', () => {
   it('should not scaffold settings when an error occurs scaffolding the repository', async () => {
     const error = new Error(any.sentence());
     when(scaffoldRepository)
-      .calledWith({octokit: octokitClient, logger, name, owner, visibility})
+      .calledWith({name, visibility}, {octokit: octokitClient, logger, prompt})
       .thenReject(error);
-    when(prompt).calledWith({
-      questions: [{
-        name: githubAccountQuestionName,
-        message: 'Which GitHub account should the repository be hosted within?'
-      }],
-      id: promptId
-    }).thenResolve({[githubAccountQuestionName]: owner});
 
     await expect(scaffold(
       {projectName: name, visibility, projectRoot, description},

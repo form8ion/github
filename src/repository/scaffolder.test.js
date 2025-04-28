@@ -4,7 +4,10 @@ import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import any from '@travi/any';
 import {when} from 'vitest-when';
 
+import promptForRepositoryOwner from './prompt.js';
 import scaffoldRepository from './scaffolder.js';
+
+vi.mock('./prompt.js');
 
 describe('creation', () => {
   const sshUrl = any.url();
@@ -20,8 +23,13 @@ describe('creation', () => {
     warn: () => undefined,
     error: () => undefined
   };
+  const prompt = () => undefined;
 
   repoNotFoundError.status = StatusCodes.NOT_FOUND;
+
+  beforeEach(() => {
+    when(promptForRepositoryOwner).calledWith(prompt).thenResolve(account);
+  });
 
   describe('for user', () => {
     let getAuthenticated;
@@ -45,7 +53,7 @@ describe('creation', () => {
         throw repoNotFoundError;
       });
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Public'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
     });
 
@@ -55,7 +63,7 @@ describe('creation', () => {
       const client = {repos: {createForAuthenticatedUser, get}, users: {getAuthenticated}};
       when(get).calledWith({owner: account, repo: name}).thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Public'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
       expect(createForAuthenticatedUser).not.toHaveBeenCalled();
     });
@@ -69,7 +77,7 @@ describe('creation', () => {
         throw repoNotFoundError;
       });
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Private'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
     });
 
@@ -80,7 +88,7 @@ describe('creation', () => {
         throw fetchFailureError;
       });
 
-      await expect(scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client, logger}))
+      await expect(scaffoldRepository({name, visibility: 'Private'}, {octokit: client, logger, prompt}))
         .rejects.toThrowError(fetchFailureError);
     });
   });
@@ -110,7 +118,7 @@ describe('creation', () => {
         throw repoNotFoundError;
       });
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Public'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
     });
 
@@ -120,7 +128,7 @@ describe('creation', () => {
       const client = {repos: {createInOrg, get}, users: {getAuthenticated}, orgs: {listForAuthenticatedUser}};
       when(get).calledWith({owner: account, repo: name}).thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Public', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Public'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
       expect(createInOrg).not.toHaveBeenCalled();
     });
@@ -134,7 +142,7 @@ describe('creation', () => {
         throw repoNotFoundError;
       });
 
-      expect(await scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'Private'}, {octokit: client, logger, prompt}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account}});
     });
 
@@ -145,7 +153,7 @@ describe('creation', () => {
         throw fetchFailureError;
       });
 
-      await expect(scaffoldRepository({name, owner: account, visibility: 'Private', octokit: client, logger}))
+      await expect(scaffoldRepository({name, visibility: 'Private'}, {octokit: client, logger, prompt}))
         .rejects.toThrowError(fetchFailureError);
     });
   });
@@ -159,7 +167,7 @@ describe('creation', () => {
       getAuthenticated.mockResolvedValue({data: {login: authenticatedUser}});
       listForAuthenticatedUser.mockResolvedValue({data: any.listOf(() => ({...any.simpleObject(), login: any.word}))});
 
-      await expect(scaffoldRepository({name, owner: account, visibility: any.word(), octokit: client, logger}))
+      await expect(scaffoldRepository({name, visibility: any.word()}, {octokit: client, logger, prompt}))
         .rejects.toThrowError(
           `User ${authenticatedUser} does not have access to create a repository in the ${account} account`
         );
@@ -168,7 +176,7 @@ describe('creation', () => {
 
   describe('no octokit instance', () => {
     it('should not attempt to create a repository if no authenticated octokit instance is provided', async () => {
-      expect(await scaffoldRepository({name, owner: account, visibility: any.word(), logger}))
+      expect(await scaffoldRepository({name, visibility: any.word()}, {logger, prompt}))
         .toEqual({});
     });
   });
