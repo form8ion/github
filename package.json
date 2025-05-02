@@ -86,7 +86,7 @@
     "ls-engines": "0.9.3",
     "mock-fs": "5.5.0",
     "msw": "2.7.5",
-    "npm-run-all2": "7.0.2",
+    "npm-run-all2": "8.0.0",
     "publint": "0.3.12",
     "remark-cli": "12.0.1",
     "remark-toc": "9.0.0",
