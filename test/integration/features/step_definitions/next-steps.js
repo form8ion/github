@@ -1,5 +1,6 @@
 import {StatusCodes} from 'http-status-codes';
 import zip from 'lodash.zip';
+import kebab from 'lodash.kebabcase';
 
 import assert from 'node:assert';
 import {Given, Then} from '@cucumber/cucumber';
@@ -20,6 +21,13 @@ Given('next steps are provided', async function () {
 
   if (this.netrcContent) {
     this.server.use(
+      http.get('https://api.github.com/search/issues', ({request}) => {
+        if (authorizationHeaderIncludesToken(request)) {
+          return HttpResponse.json({items: []});
+        }
+
+        return undefined;
+      }),
       http.post(
         `https://api.github.com/repos/${this.githubUser}/${this.projectName}/issues`,
         async ({request}) => {
@@ -28,7 +36,16 @@ Given('next steps are provided', async function () {
 
             const [, url] = zip(this.nextSteps, nextStepsIssueUrls).find(([task]) => deepEqual(
               body,
-              {title: task.summary, ...task.description && {body: task.description}}
+              {
+                ...task.description
+                  ? {
+                    body: `${task.description}
+
+<!-- octokit-unique-issue id="${kebab(task.summary)}" -->`
+                  }
+                  : {body: `<!-- octokit-unique-issue id="${kebab(task.summary)}" -->`},
+                title: task.summary
+              }
             ));
 
             return HttpResponse.json({url});
