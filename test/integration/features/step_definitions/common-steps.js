@@ -100,7 +100,11 @@ When('the scaffolder results are processed', async function () {
       {
         octokit: octokit.getNetrcAuthenticatedInstance(),
         logger,
-        prompt: ({id}) => ({[promptConstants.questionNames[id].CHECK_BYPASS_TEAM]: this.maintenanceTeamId})
+        prompt: ({id, questions}) => ({
+          [promptConstants.questionNames[id].CHECK_BYPASS_TEAM]: questions
+            .find(question => question.name === promptConstants.questionNames[id].CHECK_BYPASS_TEAM).choices
+            .find(choice => choice.name === this.maintenanceTeamName).value
+        })
       }
     );
   }

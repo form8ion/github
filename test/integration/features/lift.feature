@@ -4,8 +4,9 @@ Feature: Lift
     Given the project is versioned on GitHub
     And netrc contains a GitHub token
     And the repository settings are managed by the settings app
-    And next steps are provided
+    And the user is a member of an organization
     And a maintenance team exists in the organization
+    And next steps are provided
     When the scaffolder results are processed
     Then properties are updated in the settings file
     And issues are created for next-steps
