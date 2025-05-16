@@ -1,4 +1,6 @@
 import zip from 'lodash.zip';
+import kebab from 'lodash.kebabcase';
+import {composeCreateOrUpdateUniqueIssue} from 'octokit-plugin-unique-issue';
 
 import {describe, expect, it, vi} from 'vitest';
 import any from '@travi/any';
@@ -7,6 +9,7 @@ import {when} from 'vitest-when';
 import {factory as octokitFactory} from '../octokit/factory.js';
 import nextSteps from './next-steps.js';
 
+vi.mock('octokit-plugin-unique-issue');
 vi.mock('../octokit/factory.js');
 
 describe('next-steps', () => {
@@ -37,8 +40,17 @@ describe('next-steps', () => {
     const owner = any.word();
     octokitFactory.mockReturnValue(octokit);
     issueUrls.forEach((url, index) => {
-      when(create)
-        .calledWith({title: summaries[index], body: descriptions[index], owner, repo: repoName})
+      when(composeCreateOrUpdateUniqueIssue)
+        .calledWith(
+          octokit,
+          {
+            title: summaries[index],
+            identifier: kebab(summaries[index]),
+            body: descriptions[index],
+            owner,
+            repo: repoName
+          }
+        )
         .thenResolve({data: {url}});
     });
 

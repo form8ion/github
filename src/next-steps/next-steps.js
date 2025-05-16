@@ -1,5 +1,7 @@
 import zip from 'lodash.zip';
 import uniqBy from 'lodash.uniqby';
+import kebab from 'lodash.kebabcase';
+import {composeCreateOrUpdateUniqueIssue} from 'octokit-plugin-unique-issue';
 
 import {factory as getAuthenticatedOctokit} from '../octokit/factory.js';
 
@@ -9,9 +11,10 @@ export default async function ({results: {nextSteps}, vcs: {name: repoName, owne
   if (octokit && nextSteps) {
     const deduplicatedNextSteps = uniqBy(nextSteps, 'summary');
     const issues = await Promise.all(
-      deduplicatedNextSteps.map(({summary, description}) => octokit.issues.create({
+      deduplicatedNextSteps.map(({summary, description}) => composeCreateOrUpdateUniqueIssue(octokit, {
         title: summary,
         body: description,
+        identifier: kebab(summary),
         owner,
         repo: repoName
       }))

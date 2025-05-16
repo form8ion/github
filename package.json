@@ -61,9 +61,11 @@
     "@octokit/rest": "^21.0.0",
     "@travi/cli-messages": "^1.1.1",
     "deepmerge": "^4.3.1",
+    "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
     "lodash.zip": "^4.2.0",
-    "octokit-auth-netrc": "^3.1.1"
+    "octokit-auth-netrc": "^3.1.1",
+    "octokit-plugin-unique-issue": "^1.2.0"
   },
   "devDependencies": {
     "@cucumber/cucumber": "11.3.0",
