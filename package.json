@@ -5,7 +5,7 @@
   "version": "0.0.0-semantically-released",
   "type": "module",
   "engines": {
-    "node": "^18.17 || >=20.6.1"
+    "node": "^20.19.0 || >=22.14.0"
   },
   "author": "Matt Travi <npm@travi.org> (https://matt.travi.org)",
   "repository": "form8ion/github",
@@ -48,7 +48,8 @@
   },
   "files": [
     "example.js",
-    "lib/"
+    "lib/",
+    "src/"
   ],
   "publishConfig": {
     "access": "public",
@@ -57,14 +58,13 @@
   "packageManager": "npm@11.4.0+sha512.759091a21ee805d9c842bcfe2878d6626c48a16a5ca73c1e1338fa8379951abfc2d273ec4ad12ede64bd294237c6719b3bcc518118d1affe8a38985fe5d29773",
   "dependencies": {
     "@form8ion/core": "^4.6.1",
-    "@form8ion/repository-settings": "^1.1.4",
+    "@form8ion/github-core": "^1.0.0",
+    "@form8ion/repository-settings": "^2.0.0-beta.2",
     "@octokit/rest": "^21.0.0",
-    "@travi/cli-messages": "^1.1.1",
     "deepmerge": "^4.3.1",
     "lodash.kebabcase": "^4.1.1",
     "lodash.uniqby": "^4.7.0",
     "lodash.zip": "^4.2.0",
-    "octokit-auth-netrc": "^3.1.1",
     "octokit-plugin-unique-issue": "^1.2.0"
   },
   "devDependencies": {
