@@ -1,4 +1,4 @@
-import {error, info, success, warn} from '@travi/cli-messages';
+import promptForRepositoryOwner from './prompt.js';
 
 async function authenticatedUserIsMemberOfRequestedOrganization(account, octokit) {
   const {data: organizations} = await octokit.orgs.listForAuthenticatedUser();
@@ -12,11 +12,11 @@ async function fetchDetailsForExistingRepository(owner, name, octokit) {
   return {sshUrl, htmlUrl};
 }
 
-async function createForUser(octokit, owner, name, visibility) {
+async function createForUser({octokit, logger, owner, name, visibility}) {
   try {
     const repositoryDetails = await fetchDetailsForExistingRepository(owner, name, octokit);
 
-    warn(`The repository named ${owner}/${name} already exists on GitHub`);
+    logger.warn(`The repository named ${owner}/${name} already exists on GitHub`);
 
     return repositoryDetails;
   } catch (e) {
@@ -26,7 +26,7 @@ async function createForUser(octokit, owner, name, visibility) {
         private: 'Private' === visibility
       });
 
-      success(`Repository ${name} created for user ${owner} at ${htmlUrl}`);
+      logger.success(`Repository ${name} created for user ${owner} at ${htmlUrl}`);
 
       return {sshUrl, htmlUrl};
     }
@@ -35,11 +35,11 @@ async function createForUser(octokit, owner, name, visibility) {
   }
 }
 
-async function createForOrganization(octokit, owner, name, visibility) {
+async function createForOrganization({octokit, logger, owner, name, visibility}) {
   try {
     const repositoryDetails = await fetchDetailsForExistingRepository(owner, name, octokit);
 
-    warn(`The repository named ${owner}/${name} already exists on GitHub`);
+    logger.warn(`The repository named ${owner}/${name} already exists on GitHub`);
 
     return repositoryDetails;
   } catch (e) {
@@ -50,7 +50,7 @@ async function createForOrganization(octokit, owner, name, visibility) {
         private: 'Private' === visibility
       });
 
-      success(`Repository ${name} created for organization ${owner} at ${htmlUrl}`);
+      logger.success(`Repository ${name} created for organization ${owner} at ${htmlUrl}`);
 
       return {sshUrl, htmlUrl};
     }
@@ -59,23 +59,27 @@ async function createForOrganization(octokit, owner, name, visibility) {
   }
 }
 
-export default async function ({name, owner, visibility, octokit}) {
+export default async function scaffoldRepository({name, visibility}, {octokit, logger, prompt}) {
   if (!octokit) {
-    error('Repository cannot be created without a proper GitHub Personal Access Token!');
+    logger.error('Repository cannot be created without a proper GitHub Personal Access Token!');
 
     return {};
   }
 
-  info('Creating repository on GitHub', {level: 'secondary'});
+  const owner = await promptForRepositoryOwner(prompt);
+
+  logger.info(`Creating repository on GitHub for account '${owner}'`, {level: 'secondary'});
 
   const {data: {login: authenticatedUser}} = await octokit.users.getAuthenticated();
 
   if (owner === authenticatedUser) {
-    return {vcs: {...await createForUser(octokit, owner, name, visibility), name, owner, host: 'github'}};
+    return {vcs: {...await createForUser({octokit, logger, owner, name, visibility}), name, owner, host: 'github'}};
   }
 
   if (await authenticatedUserIsMemberOfRequestedOrganization(owner, octokit)) {
-    return {vcs: {...await createForOrganization(octokit, owner, name, visibility), name, owner, host: 'github'}};
+    return {
+      vcs: {...await createForOrganization({octokit, logger, owner, name, visibility}), name, owner, host: 'github'}
+    };
   }
 
   throw new Error(`User ${authenticatedUser} does not have access to create a repository in the ${owner} account`);

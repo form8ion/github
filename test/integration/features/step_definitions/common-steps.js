@@ -1,5 +1,6 @@
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {octokit} from '@form8ion/github-core';
 
 import {After, Before, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
@@ -12,6 +13,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));          // eslint-di
 const stubbedNodeModules = stubbedFs.load(resolve(__dirname, '..', '..', '..', '..', 'node_modules'));
 
 let scaffold, test, lift, promptConstants;
+const logger = {
+  info: () => undefined,
+  success: () => undefined,
+  warn: () => undefined,
+  error: () => undefined
+};
 
 Before(async function () {
   // eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved
@@ -41,7 +48,22 @@ When('the project is scaffolded', async function () {
         description: this.projectDescription
       },
       {
-        prompt: ({id}) => ({[promptConstants.questionNames[id].GITHUB_ACCOUNT]: this.githubUser})
+        prompt: ({id}) => {
+          const {questionNames, ids} = promptConstants;
+          const githubDetailsPromptId = ids.GITHUB_DETAILS;
+          const repositorySettingsPromptId = ids.ADMIN_SETTINGS;
+
+          switch (id) {
+            case githubDetailsPromptId:
+              return {[questionNames[githubDetailsPromptId].GITHUB_ACCOUNT]: this.githubUser};
+            case repositorySettingsPromptId:
+              return {[questionNames[repositorySettingsPromptId].SETTINGS_MANAGED_AS_CODE]: this.useSettingsApp};
+            default:
+              throw new Error(`Unknown prompt with ID: ${id}`);
+          }
+        },
+        octokit: octokit.getNetrcAuthenticatedInstance(),
+        logger
       }
     );
   } catch (err) {
@@ -65,14 +87,25 @@ When('the scaffolder results are processed', async function () {
   });
 
   if (await test({projectRoot: this.projectRoot})) {
-    this.result = await lift({
-      projectRoot: this.projectRoot,
-      vcs: {name: this.projectName, owner: this.githubUser},
-      results: {
-        projectDetails: this.projectDetails,
-        tags: this.tags,
-        ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
+    this.result = await lift(
+      {
+        projectRoot: this.projectRoot,
+        vcs: {name: this.projectName, owner: this.githubUser},
+        results: {
+          projectDetails: this.projectDetails,
+          tags: this.tags,
+          ...this.nextSteps && {nextSteps: [...this.nextSteps, ...structuredClone(this.nextSteps)]}
+        }
+      },
+      {
+        octokit: octokit.getNetrcAuthenticatedInstance(),
+        logger,
+        prompt: ({id, questions}) => ({
+          [promptConstants.questionNames[id].CHECK_BYPASS_TEAM]: questions
+            .find(question => question.name === promptConstants.questionNames[id].CHECK_BYPASS_TEAM).choices
+            .find(choice => choice.name === this.maintenanceTeamName).value
+        })
       }
-    });
+    );
   }
 });
