@@ -1,8 +1,7 @@
 import {dirname, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {octokit} from '@form8ion/github-core';
 
-import {After, Before, When} from '@cucumber/cucumber';
+import {After, Before, Then, When} from '@cucumber/cucumber';
 import stubbedFs from 'mock-fs';
 import any from '@travi/any';
 import debugTest from 'debug';
@@ -34,10 +33,7 @@ After(function () {
 });
 
 When('the project is scaffolded', async function () {
-  stubbedFs({
-    ...this.netrcContent && {[`${process.env.HOME}/.netrc`]: this.netrcContent},
-    node_modules: stubbedNodeModules
-  });
+  stubbedFs({node_modules: stubbedNodeModules});
 
   try {
     this.result = await scaffold(
@@ -62,13 +58,13 @@ When('the project is scaffolded', async function () {
               throw new Error(`Unknown prompt with ID: ${id}`);
           }
         },
-        octokit: octokit.getNetrcAuthenticatedInstance(),
+        octokit: this.octokit,
         logger
       }
     );
   } catch (err) {
     debug(err);
-    this.scaffoldError = err;
+    this.resultError = err;
   }
 });
 
@@ -77,7 +73,6 @@ When('the scaffolder results are processed', async function () {
   this.existingSettingsContent = {...any.simpleObject(), repository: any.simpleObject()};
 
   stubbedFs({
-    ...this.netrcContent && {[`${process.env.HOME}/.netrc`]: this.netrcContent},
     ...this.github && {
       '.github': {
         ...this.settingsApp && {'settings.yml': yaml.dump(this.existingSettingsContent)}
@@ -98,7 +93,7 @@ When('the scaffolder results are processed', async function () {
         }
       },
       {
-        octokit: octokit.getNetrcAuthenticatedInstance(),
+        octokit: this.octokit,
         logger,
         prompt: ({id, questions}) => ({
           [promptConstants.questionNames[id].CHECK_BYPASS_TEAM]: questions
@@ -107,5 +102,11 @@ When('the scaffolder results are processed', async function () {
         })
       }
     );
+  }
+});
+
+Then('no error is thrown', async function () {
+  if (this.resultError) {
+    throw this.resultError;
   }
 });

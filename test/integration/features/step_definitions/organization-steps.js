@@ -36,7 +36,7 @@ Given('the user is not a member of the organization', async function () {
 
 Then('and an authorization error is thrown', async function () {
   assert.equal(
-    this.scaffoldError.message,
+    this.resultError.message,
     `User ${this.userAccount} does not have access to create a repository in the ${this.organizationAccount} account`
   );
 });

@@ -7,3 +7,11 @@ extends:
 
 parserOptions:
   ecmaVersion: 2022
+
+rules:
+  import/no-unresolved:
+    - error
+    - ignore:
+        - '@octokit/core'
+        - 'vitest-when'
+        - 'vitest/config'

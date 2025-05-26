@@ -1,13 +1,16 @@
 import promptForRepositoryOwner from './prompt.js';
 
 async function authenticatedUserIsMemberOfRequestedOrganization(account, octokit) {
-  const {data: organizations} = await octokit.orgs.listForAuthenticatedUser();
+  const {data: organizations} = await octokit.request('GET /user/orgs');
 
   return organizations.reduce((acc, organization) => acc || account === organization.login, false);
 }
 
 async function fetchDetailsForExistingRepository(owner, name, octokit) {
-  const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.repos.get({owner, repo: name});
+  const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request(
+    'GET /repos/{owner}/{repo}',
+    {owner, repo: name}
+  );
 
   return {sshUrl, htmlUrl};
 }
@@ -21,10 +24,10 @@ async function createForUser({octokit, logger, owner, name, visibility}) {
     return repositoryDetails;
   } catch (e) {
     if (404 === e.status) {
-      const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.repos.createForAuthenticatedUser({
-        name,
-        private: 'Private' === visibility
-      });
+      const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request(
+        'POST /user/repos',
+        {name, private: 'Private' === visibility}
+      );
 
       logger.success(`Repository ${name} created for user ${owner} at ${htmlUrl}`);
 
@@ -44,7 +47,7 @@ async function createForOrganization({octokit, logger, owner, name, visibility})
     return repositoryDetails;
   } catch (e) {
     if (404 === e.status) {
-      const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.repos.createInOrg({
+      const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request('POST /orgs/{org}/repos', {
         org: owner,
         name,
         private: 'Private' === visibility
@@ -70,7 +73,7 @@ export default async function scaffoldRepository({name, visibility}, {octokit, l
 
   logger.info(`Creating repository on GitHub for account '${owner}'`, {level: 'secondary'});
 
-  const {data: {login: authenticatedUser}} = await octokit.users.getAuthenticated();
+  const {data: {login: authenticatedUser}} = await octokit.request('GET /user');
 
   if (owner === authenticatedUser) {
     return {vcs: {...await createForUser({octokit, logger, owner, name, visibility}), name, owner, host: 'github'}};
