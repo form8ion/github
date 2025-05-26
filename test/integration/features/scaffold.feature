@@ -34,8 +34,8 @@ Feature: Scaffolder
     Given no octokit instance is provided
     When the project is scaffolded
     Then no repository is created on GitHub
-    But repository settings are configured
-    And the .github directory was created
+    And no repository settings are configured
+    And the .github directory does not exist
     And no repository details are returned
 
   Scenario: user is a member of an organization and the public project is new

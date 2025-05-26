@@ -147,3 +147,11 @@ Then('a repository is created on GitHub', async function () {
 Then('the .github directory was created', async function () {
   assert.equal(await directoryExists(`${this.projectRoot}/.github/`), true, 'the `.github/` directory is missing');
 });
+
+Then('the .github directory does not exist', async function () {
+  assert.equal(
+    await directoryExists(`${this.projectRoot}/.github/`),
+    false,
+    'the `.github/` directory exists when it should not'
+  );
+});

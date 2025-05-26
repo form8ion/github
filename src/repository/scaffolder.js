@@ -63,12 +63,6 @@ async function createForOrganization({octokit, logger, owner, name, visibility})
 }
 
 export default async function scaffoldRepository({name, visibility}, {octokit, logger, prompt}) {
-  if (!octokit) {
-    logger.error('Repository cannot be created without a proper GitHub Personal Access Token!');
-
-    return {};
-  }
-
   const owner = await promptForRepositoryOwner(prompt);
 
   logger.info(`Creating repository on GitHub for account '${owner}'`, {level: 'secondary'});

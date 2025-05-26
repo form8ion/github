@@ -58,4 +58,8 @@ describe('scaffolder', () => {
       {prompt, octokit: octokitClient, logger}
     )).rejects.toThrowError(error);
   });
+
+  it('should not attempt to scaffold if no octokit instance is available', async () => {
+    expect(await scaffold({projectName: name, visibility, projectRoot, description}, {prompt, logger})).toEqual({});
+  });
 });

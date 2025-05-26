@@ -7,6 +7,12 @@ export default async function scaffoldGithub(
   {projectName, visibility, description, projectRoot},
   {prompt, octokit, logger}
 ) {
+  if (!octokit) {
+    logger.error('Repository cannot be created without a proper GitHub Personal Access Token!');
+
+    return {};
+  }
+
   logger.info('Initializing GitHub');
 
   await fs.mkdir(`${projectRoot}/.github`, {recursive: true});

@@ -157,11 +157,4 @@ describe('creation', () => {
         );
     });
   });
-
-  describe('no octokit instance', () => {
-    it('should not attempt to create a repository if no authenticated octokit instance is provided', async () => {
-      expect(await scaffoldRepository({name, visibility: any.word()}, {logger, prompt}))
-        .toEqual({});
-    });
-  });
 });
