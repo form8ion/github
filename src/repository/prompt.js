@@ -1,4 +1,5 @@
 import {constants} from '../prompt/index.js';
+import {accountTypeIsOrganization} from './prompt-conditionals.js';
 
 function determineAccountName(accountType, authenticatedUser, organizations, organizationId) {
   if ('user' === accountType) {
@@ -47,6 +48,7 @@ export default async function promptForRepositoryOwner({prompt, octokit}) {
         name: organizationQuestionName,
         type: 'select',
         message: 'Which of your GitHub organizations should the repository be hosted within?',
+        when: accountTypeIsOrganization,
         choices: organizations.map(({id, login}) => ({name: login, short: login, value: id}))
       }
     ]

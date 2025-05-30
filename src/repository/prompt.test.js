@@ -4,6 +4,7 @@ import any from '@travi/any';
 import zip from 'lodash.zip';
 
 import {constants} from '../prompt/index.js';
+import {accountTypeIsOrganization} from './prompt-conditionals.js';
 import promptForRepositoryOwner from './prompt.js';
 
 describe('GitHub details prompt', () => {
@@ -37,6 +38,7 @@ describe('GitHub details prompt', () => {
       name: organizationQuestionName,
       type: 'select',
       message: 'Which of your GitHub organizations should the repository be hosted within?',
+      when: accountTypeIsOrganization,
       choices: zip(organizationNames, organizationIds).map(([name, id]) => ({name, short: name, value: id}))
     }
   ];
