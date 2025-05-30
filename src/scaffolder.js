@@ -18,10 +18,9 @@ export default async function scaffoldGithub(
 
   const account = await promptForRepositoryOwner({prompt, octokit});
 
-  await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
-
   try {
     const repositoryResult = await scaffoldRepository({name: projectName, visibility, account}, {octokit, logger});
+    await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
     await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger, prompt});
 
     return repositoryResult;
