@@ -44,14 +44,23 @@ When('the project is scaffolded', async function () {
         description: this.projectDescription
       },
       {
-        prompt: ({id}) => {
+        prompt: ({id, questions}) => {
           const {questionNames, ids} = promptConstants;
           const githubDetailsPromptId = ids.GITHUB_DETAILS;
           const repositorySettingsPromptId = ids.ADMIN_SETTINGS;
 
           switch (id) {
             case githubDetailsPromptId:
-              return {[questionNames[githubDetailsPromptId].GITHUB_ACCOUNT]: this.githubUser};
+              return {
+                [questionNames[githubDetailsPromptId].ACCOUNT_TYPE]: this.accountType,
+                ...'organization' === this.accountType && {
+                  [questionNames[githubDetailsPromptId].ORGANIZATION]: this.skipMenuToSetOrganization
+                    ? this.organizationId
+                    : questions
+                      .find(({name}) => name === questionNames[githubDetailsPromptId].ORGANIZATION).choices
+                      .find(({name}) => name === this.organizationAccount).value
+                }
+              };
             case repositorySettingsPromptId:
               return {[questionNames[repositorySettingsPromptId].SETTINGS_MANAGED_AS_CODE]: this.useSettingsApp};
             default:

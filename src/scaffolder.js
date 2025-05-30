@@ -2,6 +2,7 @@ import {promises as fs} from 'node:fs';
 
 import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
+import promptForRepositoryOwner from './repository/prompt.js';
 
 export default async function scaffoldGithub(
   {projectName, visibility, description, projectRoot},
@@ -15,10 +16,12 @@ export default async function scaffoldGithub(
 
   logger.info('Initializing GitHub');
 
+  const account = await promptForRepositoryOwner({prompt, octokit});
+
   await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
 
   try {
-    const repositoryResult = await scaffoldRepository({name: projectName, visibility}, {octokit, logger, prompt});
+    const repositoryResult = await scaffoldRepository({name: projectName, visibility, account}, {octokit, logger});
     await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger, prompt});
 
     return repositoryResult;

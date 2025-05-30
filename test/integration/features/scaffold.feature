@@ -76,7 +76,7 @@ Feature: Scaffolder
     And the user is not a member of the organization
     When the project is scaffolded
     Then no repository is created on GitHub
-    But the .github directory was created
+    And the .github directory does not exist
     And no repository settings are configured
     And and an authorization error is thrown
 

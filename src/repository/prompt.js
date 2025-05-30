@@ -1,16 +1,59 @@
 import {constants} from '../prompt/index.js';
 
-export default async function promptForRepositoryOwner(prompt) {
-  const promptId = constants.ids.GITHUB_DETAILS;
-  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
+function determineAccountName(accountType, authenticatedUser, organizations, organizationId) {
+  if ('user' === accountType) {
+    return authenticatedUser;
+  }
 
-  const {[githubAccountQuestionName]: owner} = await prompt({
+  const organization = organizations.find(({id}) => id === organizationId);
+
+  if (organization) {
+    return organization.login;
+  }
+
+  throw new Error(
+    `User ${authenticatedUser} does not have access to create a repository in the ${organizationId} account`
+  );
+}
+
+export default async function promptForRepositoryOwner({prompt, octokit}) {
+  const promptId = constants.ids.GITHUB_DETAILS;
+  const {
+    ACCOUNT_TYPE: accountTypeQuestionName,
+    ORGANIZATION: organizationQuestionName
+  } = constants.questionNames[promptId];
+
+  const [{data: {login: authenticatedUser}}, {data: organizations}] = await Promise.all([
+    octokit.request('GET /user'),
+    octokit.request('GET /user/orgs')
+  ]);
+
+  const {
+    [accountTypeQuestionName]: accountType,
+    [organizationQuestionName]: organizationId
+  } = await prompt({
     id: promptId,
-    questions: [{
-      name: githubAccountQuestionName,
-      message: 'Which GitHub account should the repository be hosted within?'
-    }]
+    questions: [
+      {
+        name: accountTypeQuestionName,
+        type: 'select',
+        message: 'Which type of GitHub account should be used to host the repository?',
+        choices: [
+          {name: `User (${authenticatedUser})`, value: 'user', short: 'user'},
+          {name: 'Organization', value: 'organization', short: 'org'}
+        ]
+      },
+      {
+        name: organizationQuestionName,
+        type: 'select',
+        message: 'Which of your GitHub organizations should the repository be hosted within?',
+        choices: organizations.map(({id, login}) => ({name: login, short: login, value: id}))
+      }
+    ]
   });
 
-  return owner;
+  return {
+    type: accountType,
+    name: determineAccountName(accountType, authenticatedUser, organizations, organizationId)
+  };
 }

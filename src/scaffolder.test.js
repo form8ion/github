@@ -6,10 +6,12 @@ import {beforeEach, describe, expect, it, vi} from 'vitest';
 
 import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
+import promptForRepositoryOwner from './repository/prompt.js';
 import scaffold from './scaffolder.js';
 
 vi.mock('node:fs');
 vi.mock('./settings/index.js');
+vi.mock('./repository/prompt.js');
 vi.mock('./repository/index.js');
 
 describe('scaffolder', () => {
@@ -18,6 +20,7 @@ describe('scaffolder', () => {
   const name = any.word();
   const visibility = any.word();
   const description = any.sentence();
+  const account = any.word();
   const octokitClient = any.simpleObject();
   const logger = {
     info: () => undefined,
@@ -28,12 +31,14 @@ describe('scaffolder', () => {
 
   beforeEach(() => {
     prompt = vi.fn();
+
+    when(promptForRepositoryOwner).calledWith({prompt, octokit: octokitClient}).thenResolve(account);
   });
 
   it('should create the github repository', async () => {
     const repositoryResult = any.simpleObject();
     when(scaffoldRepository)
-      .calledWith({name, visibility}, {octokit: octokitClient, logger, prompt})
+      .calledWith({name, visibility, account}, {octokit: octokitClient, logger})
       .thenResolve(repositoryResult);
 
     expect(await scaffold(
@@ -50,7 +55,7 @@ describe('scaffolder', () => {
   it('should not scaffold settings when an error occurs scaffolding the repository', async () => {
     const error = new Error(any.sentence());
     when(scaffoldRepository)
-      .calledWith({name, visibility}, {octokit: octokitClient, logger, prompt})
+      .calledWith({name, visibility, account}, {octokit: octokitClient, logger})
       .thenReject(error);
 
     await expect(scaffold(

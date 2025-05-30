@@ -1,11 +1,3 @@
-import promptForRepositoryOwner from './prompt.js';
-
-async function authenticatedUserIsMemberOfRequestedOrganization(account, octokit) {
-  const {data: organizations} = await octokit.request('GET /user/orgs');
-
-  return organizations.reduce((acc, organization) => acc || account === organization.login, false);
-}
-
 async function fetchDetailsForExistingRepository(owner, name, octokit) {
   const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request(
     'GET /repos/{owner}/{repo}',
@@ -62,22 +54,29 @@ async function createForOrganization({octokit, logger, owner, name, visibility})
   }
 }
 
-export default async function scaffoldRepository({name, visibility}, {octokit, logger, prompt}) {
-  const owner = await promptForRepositoryOwner(prompt);
+export default async function scaffoldRepository(
+  {name, visibility, account: {type: accountType, name: accountName}},
+  {octokit, logger}
+) {
+  logger.info(`Creating repository on GitHub for account '${accountName}'`, {level: 'secondary'});
 
-  logger.info(`Creating repository on GitHub for account '${owner}'`, {level: 'secondary'});
-
-  const {data: {login: authenticatedUser}} = await octokit.request('GET /user');
-
-  if (owner === authenticatedUser) {
-    return {vcs: {...await createForUser({octokit, logger, owner, name, visibility}), name, owner, host: 'github'}};
-  }
-
-  if (await authenticatedUserIsMemberOfRequestedOrganization(owner, octokit)) {
+  if ('user' === accountType) {
     return {
-      vcs: {...await createForOrganization({octokit, logger, owner, name, visibility}), name, owner, host: 'github'}
+      vcs: {
+        ...await createForUser({octokit, logger, owner: accountName, name, visibility}),
+        name,
+        owner: accountName,
+        host: 'github'
+      }
     };
   }
 
-  throw new Error(`User ${authenticatedUser} does not have access to create a repository in the ${owner} account`);
+  return {
+    vcs: {
+      ...await createForOrganization({octokit, logger, owner: accountName, name, visibility}),
+      name,
+      owner: accountName,
+      host: 'github'
+    }
+  };
 }

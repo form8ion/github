@@ -7,7 +7,10 @@ export const ids = {
 };
 
 export const questionNames = {
-  [ids.GITHUB_DETAILS]: {GITHUB_ACCOUNT: 'GITHUB_ACCOUNT'},
+  [ids.GITHUB_DETAILS]: {
+    ACCOUNT_TYPE: 'ACCOUNT_TYPE',
+    ORGANIZATION: 'ORGANIZATION'
+  },
   [ids.ADMIN_SETTINGS]: {SETTINGS_MANAGED_AS_CODE: 'SETTINGS_MANAGED_AS_CODE'},
   ...repositorySettingsPromptConstants.questionNames
 };
