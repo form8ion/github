@@ -2,8 +2,10 @@ Feature: Lift
 
   Scenario: lift settings and create issues for next steps
     Given the project is versioned on GitHub
-    And netrc contains a GitHub token
+    And an Octokit instance is provided
     And the repository settings are managed by the settings app
+    And the user is a member of an organization
+    And a maintenance team exists in the organization
     And next steps are provided
     When the scaffolder results are processed
     Then properties are updated in the settings file
@@ -20,9 +22,10 @@ Feature: Lift
     When the scaffolder results are processed
     Then no settings file exists
 
-  Scenario: no authentication
+  Scenario: no octokit
     Given the project is versioned on GitHub
-    But no authentication is provided
+    But no octokit instance is provided
     And next steps are provided
     When the scaffolder results are processed
-    Then no issues are created for next-steps
+    Then no error is thrown
+    And no issues are created for next-steps

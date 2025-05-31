@@ -1,42 +1,31 @@
 import {promises as fs} from 'node:fs';
-import {error, info} from '@travi/cli-messages';
-import {scaffold as scaffoldSettings} from '@form8ion/repository-settings';
 
-import {constants} from './prompt/index.js';
-import {factory as getAuthenticatedOctokit} from './octokit/factory.js';
+import {scaffold as scaffoldSettings} from './settings/index.js';
 import {scaffold as scaffoldRepository} from './repository/index.js';
+import promptForRepositoryOwner from './repository/prompt.js';
 
-async function promptForOwner(prompt) {
-  const promptId = constants.ids.GITHUB_DETAILS;
-  const githubAccountQuestionName = constants.questionNames[promptId].GITHUB_ACCOUNT;
+export default async function scaffoldGithub(
+  {projectName, visibility, description, projectRoot},
+  {prompt, octokit, logger}
+) {
+  if (!octokit) {
+    logger.error('Repository cannot be created without a proper GitHub Personal Access Token!');
 
-  const {[githubAccountQuestionName]: owner} = await prompt({
-    id: promptId,
-    questions: [{
-      name: githubAccountQuestionName,
-      message: 'Which GitHub account should the repository be hosted within?'
-    }]
-  });
+    return {};
+  }
 
-  return owner;
-}
+  logger.info('Initializing GitHub');
 
-export default async function ({projectName, visibility, description, projectRoot}, {prompt}) {
-  info('Initializing GitHub');
-
-  const octokit = getAuthenticatedOctokit();
-  const [owner] = await Promise.all([
-    promptForOwner(prompt),
-    fs.mkdir(`${projectRoot}/.github`, {recursive: true})
-  ]);
+  const account = await promptForRepositoryOwner({prompt, octokit});
 
   try {
-    const repositoryResult = await scaffoldRepository({octokit, name: projectName, owner, visibility});
-    await scaffoldSettings({projectRoot, projectName, visibility, description});
+    const repositoryResult = await scaffoldRepository({name: projectName, visibility, account}, {octokit, logger});
+    await fs.mkdir(`${projectRoot}/.github`, {recursive: true});
+    await scaffoldSettings({projectRoot, projectName, visibility, description}, {logger, prompt});
 
     return repositoryResult;
   } catch (e) {
-    error(e.message);
+    logger.error(e.message);
 
     throw e;
   }

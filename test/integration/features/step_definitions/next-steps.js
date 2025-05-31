@@ -19,7 +19,7 @@ Given('next steps are provided', async function () {
     .map(([summary, description]) => ({...any.simpleObject(), summary, description}));
   nextStepsIssueUrls = this.nextSteps.map(() => any.url());
 
-  if (this.netrcContent) {
+  if (this.octokit) {
     this.server.use(
       http.get('https://api.github.com/search/issues', ({request}) => {
         if (authorizationHeaderIncludesToken(request)) {

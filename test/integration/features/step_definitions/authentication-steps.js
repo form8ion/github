@@ -1,3 +1,4 @@
+import {Octokit} from '@octokit/core';
 import {StatusCodes} from 'http-status-codes';
 
 import {Given} from '@cucumber/cucumber';
@@ -5,17 +6,13 @@ import {http, HttpResponse} from 'msw';
 
 import {authorizationHeaderIncludesToken} from './repository-steps.js';
 
-Given('no authentication is provided', async function () {
-  return undefined;
+Given('no octokit instance is provided', async function () {
+  this.octokit = null;
 });
 
-Given('netrc contains no GitHub token', async function () {
-  this.netrcContent = '';
-});
-
-Given('netrc contains a GitHub token', async function () {
+Given('an Octokit instance is provided', async function () {
   this.githubUser = this.userAccount;
-  this.netrcContent = `machine api.github.com\n  login ${this.githubToken}`;
+  this.octokit = new Octokit({auth: this.githubToken});
 
   this.server.use(
     http.get('https://api.github.com/user', ({request}) => {
