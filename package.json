@@ -58,7 +58,7 @@
   "dependencies": {
     "@form8ion/core": "^4.6.1",
     "@form8ion/repository-settings": "^1.1.4",
-    "@octokit/rest": "^21.0.0",
+    "@octokit/rest": "^22.0.0",
     "@travi/cli-messages": "^1.1.1",
     "deepmerge": "^4.3.1",
     "lodash.kebabcase": "^4.1.1",
