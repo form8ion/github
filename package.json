@@ -96,7 +96,7 @@
     "rimraf": "6.1.0",
     "rollup": "4.53.2",
     "rollup-plugin-auto-external": "2.0.0",
-    "vitest": "3.2.4",
+    "vitest": "4.0.9",
     "vitest-when": "0.10.0"
   },
   "peerDependencies": {
