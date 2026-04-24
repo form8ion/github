@@ -235,7 +235,7 @@ $ npm test
 
 [coverage-link]: https://codecov.io/github/form8ion/github
 
-[coverage-badge]: https://img.shields.io/codecov/c/github/form8ion/github?logo=codecov
+[coverage-badge]: https://img.shields.io/codecov/c/github/form8ion/github/master?logo=codecov
 
 [slsa-badge]: https://slsa.dev/images/gh-badge-level2.svg
 
