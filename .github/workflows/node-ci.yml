@@ -45,9 +45,16 @@ jobs:
       - run: npm install --global corepack@latest
       - run: corepack npm audit signatures
       - run: npm test
-      - run: npx @gravityci/cli ./lib/
+      - name: Submit package metadata to Gravity
         env:
           GRAVITY_TOKEN: ${{ secrets.GRAVITY_TOKEN }}
+        run: |
+          if [ -z "$GRAVITY_TOKEN" ]; then
+            echo "Skipping Gravity submission because GRAVITY_TOKEN is not available."
+            exit 0
+          fi
+
+          npx @gravityci/cli ./lib/
       - name: Upload unit test coverage to Codecov
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
