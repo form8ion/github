@@ -14,6 +14,12 @@ const htmlUrl = any.url();
 const userAccount = any.word();
 const organizationAccount = any.word();
 
+export const projectToRepositoryVisibilityMap = {
+  OSS: 'public',
+  ISS: 'internal',
+  CS: 'private'
+};
+
 export function authorizationHeaderIncludesToken(request) {
   return request.headers.get('authorization') === `token ${githubToken}`;
 }
@@ -140,7 +146,7 @@ Then('no repository is created on GitHub', async function () {
 
 Then('a repository is created on GitHub', async function () {
   assert.equal(this.createdRepositoryDetails.name, this.projectName);
-  assert.equal(this.createdRepositoryDetails.private, 'Public' !== this.projectVisibility);
+  assert.equal(this.createdRepositoryDetails.visibility, projectToRepositoryVisibilityMap[this.projectVisibility]);
 });
 
 Then('the .github directory was created', async function () {

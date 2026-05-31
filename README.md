@@ -110,7 +110,7 @@ await scaffold(
   {
     projectRoot,
     projectName: 'project-name',
-    visibility: any.fromList(['Public', 'Private']),
+    visibility: any.fromList(['OSS', 'ISS', 'CS']),
     description: any.sentence()
   },
   {

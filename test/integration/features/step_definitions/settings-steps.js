@@ -5,6 +5,8 @@ import {fileExists} from '@form8ion/core';
 import assert from 'node:assert';
 import {Before, Given, Then} from '@cucumber/cucumber';
 
+import {projectToRepositoryVisibilityMap} from './repository-steps.js';
+
 Before(function () {
   this.useSettingsApp = true;
 });
@@ -31,7 +33,7 @@ Then('repository settings are configured', async function () {
       repository: {
         name: this.projectName,
         description: this.projectDescription,
-        private: 'Public' !== this.projectVisibility
+        visibility: projectToRepositoryVisibilityMap[this.projectVisibility]
       }
     }
   );

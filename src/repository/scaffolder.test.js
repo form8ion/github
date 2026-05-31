@@ -39,10 +39,10 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(repoNotFoundError);
       when(octokitRequest)
-        .calledWith('POST /user/repos', {name, private: false})
+        .calledWith('POST /user/repos', {name, visibility: 'public'})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Public', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
     });
 
@@ -51,20 +51,32 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Public', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
-      expect(octokitRequest).not.toHaveBeenCalledWith('POST /user/repos', {name, private: false});
+      expect(octokitRequest).not.toHaveBeenCalledWith('POST /user/repos', {name, visibility: 'public'});
     });
 
-    it('should create the repository as private when visibility is `Private`', async () => {
+    it('should create the repository as `private` when visibility is closed source', async () => {
       when(octokitRequest)
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(repoNotFoundError);
       when(octokitRequest)
-        .calledWith('POST /user/repos', {name, private: true})
+        .calledWith('POST /user/repos', {name, visibility: 'private'})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Private', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+    });
+
+    it('should create the repository as `internal` when visibility is inner source', async () => {
+      when(octokitRequest)
+        .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
+        .thenThrow(repoNotFoundError);
+      when(octokitRequest)
+        .calledWith('POST /user/repos', {name, visibility: 'internal'})
+        .thenResolve(repoDetailsResponse);
+
+      expect(await scaffoldRepository({name, visibility: 'ISS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
     });
 
@@ -73,8 +85,8 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(fetchFailureError);
 
-      await expect(scaffoldRepository({name, visibility: 'Private', account}, {octokit: client, logger}))
-        .rejects.toThrowError(fetchFailureError);
+      await expect(scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
+        .rejects.toThrow(fetchFailureError);
     });
   });
 
@@ -94,10 +106,10 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(repoNotFoundError);
       when(octokitRequest)
-        .calledWith('POST /orgs/{org}/repos', {org: account.name, name, private: false})
+        .calledWith('POST /orgs/{org}/repos', {org: account.name, name, visibility: 'public'})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Public', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
     });
 
@@ -106,20 +118,35 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Public', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
-      expect(octokitRequest).not.toHaveBeenCalledWith('POST /orgs/{org}/repos', {org: account, name, private: false});
+      expect(octokitRequest).not.toHaveBeenCalledWith(
+        'POST /orgs/{org}/repos',
+        {org: account, name, visibility: 'public'}
+      );
     });
 
-    it('should create the repository as private when visibility is `Private`', async () => {
+    it('should create the repository as `private` when visibility is closed source', async () => {
       when(octokitRequest)
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(repoNotFoundError);
       when(octokitRequest)
-        .calledWith('POST /orgs/{org}/repos', {org: account.name, name, private: true})
+        .calledWith('POST /orgs/{org}/repos', {org: account.name, name, visibility: 'private'})
         .thenResolve(repoDetailsResponse);
 
-      expect(await scaffoldRepository({name, visibility: 'Private', account}, {octokit: client, logger}))
+      expect(await scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+    });
+
+    it('should create the repository as `internal` when visibility is inner source', async () => {
+      when(octokitRequest)
+        .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
+        .thenThrow(repoNotFoundError);
+      when(octokitRequest)
+        .calledWith('POST /orgs/{org}/repos', {org: account.name, name, visibility: 'internal'})
+        .thenResolve(repoDetailsResponse);
+
+      expect(await scaffoldRepository({name, visibility: 'ISS', account}, {octokit: client, logger}))
         .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
     });
 
@@ -128,8 +155,8 @@ describe('creation', () => {
         .calledWith('GET /repos/{owner}/{repo}', {owner: account.name, repo: name})
         .thenThrow(fetchFailureError);
 
-      await expect(scaffoldRepository({name, visibility: 'Private', account}, {octokit: client, logger}))
-        .rejects.toThrowError(fetchFailureError);
+      await expect(scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
+        .rejects.toThrow(fetchFailureError);
     });
   });
 });
