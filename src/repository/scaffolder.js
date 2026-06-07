@@ -1,3 +1,9 @@
+const projectToRepositoryVisibilityMap = {
+  OSS: 'public',
+  ISS: 'internal',
+  CS: 'private'
+};
+
 async function fetchDetailsForExistingRepository(owner, name, octokit) {
   const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request(
     'GET /repos/{owner}/{repo}',
@@ -18,7 +24,7 @@ async function createForUser({octokit, logger, owner, name, visibility}) {
     if (404 === e.status) {
       const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request(
         'POST /user/repos',
-        {name, private: 'Private' === visibility}
+        {name, visibility: projectToRepositoryVisibilityMap[visibility]}
       );
 
       logger.success(`Repository ${name} created for user ${owner} at ${htmlUrl}`);
@@ -42,7 +48,7 @@ async function createForOrganization({octokit, logger, owner, name, visibility})
       const {data: {ssh_url: sshUrl, html_url: htmlUrl}} = await octokit.request('POST /orgs/{org}/repos', {
         org: owner,
         name,
-        private: 'Private' === visibility
+        visibility: projectToRepositoryVisibilityMap[visibility]
       });
 
       logger.success(`Repository ${name} created for organization ${owner} at ${htmlUrl}`);

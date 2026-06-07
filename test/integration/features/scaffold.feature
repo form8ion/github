@@ -3,7 +3,7 @@ Feature: Scaffolder
   Scenario: new public repository
     Given an Octokit instance is provided
     And no repository exists for the "user" on GitHub
-    And the visibility of the repository should be "Public"
+    And the visibility of the repository should be "Open Source"
     When the project is scaffolded
     Then no error is thrown
     And a repository is created on GitHub
@@ -14,7 +14,7 @@ Feature: Scaffolder
   Scenario: new private repository
     Given an Octokit instance is provided
     And no repository exists for the "user" on GitHub
-    And the visibility of the repository should be "Private"
+    And the visibility of the repository should be "Closed Source"
     When the project is scaffolded
     Then a repository is created on GitHub
     And the .github directory was created
@@ -24,6 +24,7 @@ Feature: Scaffolder
   Scenario: existing repository
     Given an Octokit instance is provided
     And a repository already exists for the "user" on GitHub
+    And the visibility of the repository should be "Open Source"
     When the project is scaffolded
     Then no repository is created on GitHub
     But repository details are returned
@@ -42,7 +43,7 @@ Feature: Scaffolder
     Given an Octokit instance is provided
     And the user is a member of an organization
     And no repository exists for the "organization" on GitHub
-    And the visibility of the repository should be "Public"
+    And the visibility of the repository should be "Open Source"
     When the project is scaffolded
     Then a repository is created on GitHub
     And the .github directory was created
@@ -53,7 +54,7 @@ Feature: Scaffolder
     Given an Octokit instance is provided
     And the user is a member of an organization
     And no repository exists for the "organization" on GitHub
-    And the visibility of the repository should be "Private"
+    And the visibility of the repository should be "Closed Source"
     When the project is scaffolded
     Then no error is thrown
     And a repository is created on GitHub
@@ -65,6 +66,7 @@ Feature: Scaffolder
     Given an Octokit instance is provided
     And the user is a member of an organization
     And a repository already exists for the "organization" on GitHub
+    And the visibility of the repository should be "Open Source"
     When the project is scaffolded
     Then no repository is created on GitHub
     And the .github directory was created
@@ -83,7 +85,7 @@ Feature: Scaffolder
   Scenario: admin settings not managed by the repository-settings app
     Given an Octokit instance is provided
     And no repository exists for the "user" on GitHub
-    And the visibility of the repository should be "Public"
+    And the visibility of the repository should be "Open Source"
     But the admin settings should not be managed by the repository-settings app
     When the project is scaffolded
     Then a repository is created on GitHub
