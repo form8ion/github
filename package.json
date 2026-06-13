@@ -67,7 +67,7 @@
     "octokit-plugin-unique-issue": "^1.2.0"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "12.9.0",
+    "@cucumber/cucumber": "13.0.0",
     "@form8ion/commitlint-config": "2.0.16",
     "@form8ion/eslint-config": "7.0.18",
     "@form8ion/eslint-config-cucumber": "1.4.1",
