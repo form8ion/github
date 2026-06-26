@@ -133,7 +133,7 @@ Then('repository details are returned', async function () {
   assert.equal(this.result.vcs.htmlUrl, htmlUrl);
   assert.equal(this.result.vcs.name, this.projectName);
   assert.equal(this.result.vcs.owner, this.githubUser);
-  assert.equal(this.result.vcs.host, 'github');
+  assert.equal(this.result.vcs.host, 'github.com');
 });
 
 Then('no repository details are returned', async function () {

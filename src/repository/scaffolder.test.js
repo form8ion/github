@@ -43,7 +43,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should not create the repository when it already exists', async () => {
@@ -52,7 +52,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
       expect(octokitRequest).not.toHaveBeenCalledWith('POST /user/repos', {name, visibility: 'public'});
     });
 
@@ -65,7 +65,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should create the repository as `internal` when visibility is inner source', async () => {
@@ -77,7 +77,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'ISS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should rethrow other errors', async () => {
@@ -110,7 +110,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should not create the repository when it already exists', async () => {
@@ -119,7 +119,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'OSS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
       expect(octokitRequest).not.toHaveBeenCalledWith(
         'POST /orgs/{org}/repos',
         {org: account, name, visibility: 'public'}
@@ -135,7 +135,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'CS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should create the repository as `internal` when visibility is inner source', async () => {
@@ -147,7 +147,7 @@ describe('creation', () => {
         .thenResolve(repoDetailsResponse);
 
       expect(await scaffoldRepository({name, visibility: 'ISS', account}, {octokit: client, logger}))
-        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github', owner: account.name}});
+        .toEqual({vcs: {sshUrl, htmlUrl, name, host: 'github.com', owner: account.name}});
     });
 
     it('should rethrow other errors', async () => {

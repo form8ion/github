@@ -72,7 +72,7 @@ export default async function scaffoldRepository(
         ...await createForUser({octokit, logger, owner: accountName, name, visibility}),
         name,
         owner: accountName,
-        host: 'github'
+        host: 'github.com'
       }
     };
   }
@@ -82,7 +82,7 @@ export default async function scaffoldRepository(
       ...await createForOrganization({octokit, logger, owner: accountName, name, visibility}),
       name,
       owner: accountName,
-      host: 'github'
+      host: 'github.com'
     }
   };
 }
